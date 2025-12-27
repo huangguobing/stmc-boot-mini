@@ -1,0 +1,3 @@
+cn.iocoder.stmc.framework.security.config.StmcSecurityAutoConfiguration
+cn.iocoder.stmc.framework.security.config.StmcWebSecurityConfigurerAdapter
+cn.iocoder.stmc.framework.operatelog.config.StmcOperateLogConfiguration

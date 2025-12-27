@@ -1,0 +1,7 @@
+cn.iocoder.stmc.framework.apilog.config.StmcApiLogAutoConfiguration
+cn.iocoder.stmc.framework.jackson.config.StmcJacksonAutoConfiguration
+cn.iocoder.stmc.framework.swagger.config.StmcSwaggerAutoConfiguration
+cn.iocoder.stmc.framework.web.config.StmcWebAutoConfiguration
+cn.iocoder.stmc.framework.xss.config.StmcXssAutoConfiguration
+cn.iocoder.stmc.framework.banner.config.StmcBannerAutoConfiguration
+cn.iocoder.stmc.framework.encrypt.config.StmcApiEncryptAutoConfiguration

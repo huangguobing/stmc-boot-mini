@@ -1,0 +1,4 @@
+cn.iocoder.stmc.framework.idempotent.config.StmcIdempotentConfiguration
+cn.iocoder.stmc.framework.lock4j.config.StmcLock4jConfiguration
+cn.iocoder.stmc.framework.ratelimiter.config.StmcRateLimiterConfiguration
+cn.iocoder.stmc.framework.signature.config.StmcApiSignatureAutoConfiguration
