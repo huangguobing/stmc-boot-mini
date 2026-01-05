@@ -15,6 +15,7 @@
         <!-- 各种 module 拓展 -->
         <module>stmc-module-system</module>
         <module>stmc-module-infra</module>
+        <module>stmc-module-erp</module>
 <!--        <module>stmc-module-member</module>-->
 <!--        <module>stmc-module-bpm</module>-->
 <!--        <module>stmc-module-report</module>-->
