@@ -1,0 +1,172 @@
+server:
+  port: 48080
+
+--- #################### 数据库相关配置 ####################
+spring:
+  autoconfigure:
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+      - org.springframework.ai.vectorstore.qdrant.autoconfigure.QdrantVectorStoreAutoConfiguration
+      - org.springframework.ai.vectorstore.milvus.autoconfigure.MilvusVectorStoreAutoConfiguration
+  # 数据源配置
+  datasource:
+    druid:
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        allow:
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: ${DRUID_PASSWORD:admin123}
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 500
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+    dynamic:
+      druid:
+        initial-size: 5
+        min-idle: 5
+        max-active: 50
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 600000
+        max-evictable-idle-time-millis: 1800000
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+      primary: master
+      datasource:
+        master:
+          url: ${SPRING_DATASOURCE_URL:jdbc:mysql://stmc-mysql:3306/stmc_erp?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true}
+          username: ${SPRING_DATASOURCE_USERNAME:admin}
+          password: ${SPRING_DATASOURCE_PASSWORD:123456}
+        slave:
+          lazy: true
+          url: ${SPRING_DATASOURCE_URL:jdbc:mysql://stmc-mysql:3306/stmc_erp?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true}
+          username: ${SPRING_DATASOURCE_USERNAME:admin}
+          password: ${SPRING_DATASOURCE_PASSWORD:123456}
+
+  # Redis 配置
+  redis:
+    host: ${SPRING_REDIS_HOST:stmc-redis}
+    port: ${SPRING_REDIS_PORT:6379}
+    database: ${SPRING_REDIS_DATABASE:0}
+    password: ${SPRING_REDIS_PASSWORD:Stmcerp666888.}
+
+--- #################### 定时任务相关配置 ####################
+
+spring:
+  quartz:
+    auto-startup: true
+    scheduler-name: schedulerName
+    job-store-type: jdbc
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: schedulerName
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            isClustered: true
+            clusterCheckinInterval: 15000
+            misfireThreshold: 60000
+          threadPool:
+            threadCount: 25
+            threadPriority: 5
+            class: org.quartz.simpl.SimpleThreadPool
+    jdbc:
+      initialize-schema: NEVER
+
+--- #################### 消息队列相关 ####################
+
+rocketmq:
+  name-server: ${ROCKETMQ_NAMESRV:127.0.0.1:9876}
+
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:127.0.0.1}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:rabbit}
+    password: ${RABBITMQ_PASSWORD:rabbit}
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:127.0.0.1:9092}
+
+--- #################### 服务保障相关配置 ####################
+
+lock4j:
+  acquire-timeout: 3000
+  expire: 30000
+
+--- #################### 监控相关配置 ####################
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health # 生产环境只开放health接口
+
+spring:
+  boot:
+    admin:
+      client:
+        url: http://127.0.0.1:${server.port}/${spring.boot.admin.context-path}
+        instance:
+          service-host-type: IP
+      context-path: /admin
+
+# 日志配置
+logging:
+  file:
+    name: /app/logs/${spring.application.name}.log
+  level:
+    cn.iocoder.stmc.module: info
+    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR
+
+debug: false
+
+--- #################### STMC相关配置 ####################
+
+stmc:
+  captcha:
+    enable: false # 生产环境关闭验证码
+  security:
+    mock-enable: false # 生产环境关闭 mock
+  access-log:
+    enable: false # 生产环境关闭访问日志（参考local配置）
+  demo: false
+
+# 注意：生产环境已关闭以下功能（参考local配置）：
+# - 微信公众号、小程序配置（使用占位符配置）
+# - RocketMQ、RabbitMQ、Kafka（使用默认配置，不启用）
+# - Spring Boot Admin（不启用）
+
+--- #################### 微信公众号、小程序相关配置 ####################
+# 生产环境微信配置（占位符，实际不使用）
+wx:
+  mp:
+    app-id: ${WX_MP_APP_ID:wx-placeholder-appid}
+    secret: ${WX_MP_SECRET:wx-placeholder-secret}
+    config-storage:
+      type: RedisTemplate
+      key-prefix: wx
+      http-client-type: HttpClient
+  miniapp:
+    appid: ${WX_MINIAPP_APP_ID:wx-placeholder-appid}
+    secret: ${WX_MINIAPP_SECRET:wx-placeholder-secret}
+    config-storage:
+      type: RedisTemplate
+      key-prefix: wa
+      http-client-type: HttpClient

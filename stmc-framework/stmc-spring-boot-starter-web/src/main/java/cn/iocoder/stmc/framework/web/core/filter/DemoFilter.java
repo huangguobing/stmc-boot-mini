@@ -15,7 +15,7 @@ import static cn.iocoder.stmc.framework.common.exception.enums.GlobalErrorCodeCo
 /**
  * 演示 Filter，禁止用户发起写操作，避免影响测试数据
  *
- * @author 芋道源码
+ * @author bsl
  */
 public class DemoFilter extends OncePerRequestFilter {
 

@@ -42,7 +42,7 @@ import java.util.List;
  */
 @AutoConfiguration(before = StmcRedisMQConsumerAutoConfiguration.class) // before StmcRedisMQConsumerAutoConfiguration 的原因是，需要保证 RedisWebSocketMessageConsumer 先创建，才能创建 RedisMessageListenerContainer
 @EnableWebSocket // 开启 websocket
-@ConditionalOnProperty(prefix = "stmc.websocket", value = "enable", matchIfMissing = true) // 允许使用 yudao.websocket.enable=false 禁用 websocket
+@ConditionalOnProperty(prefix = "stmc.websocket", value = "enable", matchIfMissing = true) // 允许使用 stmc.websocket.enable=false 禁用 websocket
 @EnableConfigurationProperties(WebSocketProperties.class)
 public class StmcWebSocketAutoConfiguration {
 

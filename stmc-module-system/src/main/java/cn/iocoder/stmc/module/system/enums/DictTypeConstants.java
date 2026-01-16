@@ -3,7 +3,7 @@ package cn.iocoder.stmc.module.system.enums;
 /**
  * System 字典类型的枚举类
  *
- * @author 芋道源码
+ * @author bsl
  */
 public interface DictTypeConstants {
 

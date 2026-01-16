@@ -19,7 +19,7 @@ import static cn.iocoder.stmc.module.system.dal.redis.RedisKeyConstants.OAUTH2_A
 /**
  * {@link OAuth2AccessTokenDO} 的 RedisDAO
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Repository
 public class OAuth2AccessTokenRedisDAO {

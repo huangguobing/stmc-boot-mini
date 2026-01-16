@@ -23,7 +23,7 @@ public interface CustomerMapper extends BaseMapperX<CustomerDO> {
                 .likeIfPresent(CustomerDO::getMobile, reqVO.getMobile())
                 .eqIfPresent(CustomerDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(CustomerDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(CustomerDO::getId));
+                .orderByDesc(CustomerDO::getCreateTime));
     }
 
     default CustomerDO selectByName(String name) {

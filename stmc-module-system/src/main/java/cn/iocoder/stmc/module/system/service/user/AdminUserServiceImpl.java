@@ -22,6 +22,7 @@ import cn.iocoder.stmc.module.system.controller.admin.user.vo.user.UserPageReqVO
 import cn.iocoder.stmc.module.system.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.stmc.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.stmc.module.system.dal.dataobject.dept.UserPostDO;
+import cn.iocoder.stmc.module.system.dal.dataobject.permission.RoleDO;
 import cn.iocoder.stmc.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.stmc.module.system.dal.mysql.dept.UserPostMapper;
 import cn.iocoder.stmc.module.system.dal.mysql.user.AdminUserMapper;
@@ -29,6 +30,7 @@ import cn.iocoder.stmc.module.system.service.dept.DeptService;
 import cn.iocoder.stmc.module.system.service.dept.PostService;
 import cn.iocoder.stmc.module.system.service.oauth2.OAuth2TokenService;
 import cn.iocoder.stmc.module.system.service.permission.PermissionService;
+import cn.iocoder.stmc.module.system.service.permission.RoleService;
 import cn.iocoder.stmc.module.system.service.tenant.TenantService;
 import com.google.common.annotations.VisibleForTesting;
 import com.mzt.logapi.context.LogRecordContext;
@@ -53,7 +55,7 @@ import static cn.iocoder.stmc.module.system.enums.LogRecordConstants.*;
 /**
  * 后台用户 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service("adminUserService")
 @Slf4j
@@ -62,6 +64,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     static final String USER_INIT_PASSWORD_KEY = "system.user.init-password";
 
     static final String USER_REGISTER_ENABLED_KEY = "system.user.register-enabled";
+
+    /** 默认角色编码：业务员 */
+    private static final String DEFAULT_ROLE_CODE = "salesman";
 
     @Resource
     private AdminUserMapper userMapper;
@@ -72,6 +77,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     private PostService postService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private RoleService roleService;
     @Resource
     private PasswordEncoder passwordEncoder;
     @Resource
@@ -113,9 +120,34 @@ public class AdminUserServiceImpl implements AdminUserService {
                     postId -> new UserPostDO().setUserId(user.getId()).setPostId(postId)));
         }
 
+        // 2.3 分配角色
+        if (CollectionUtil.isNotEmpty(createReqVO.getRoleIds())) {
+            // 使用前端传入的角色
+            permissionService.assignUserRole(user.getId(), createReqVO.getRoleIds());
+            log.info("[createUser][用户({}) 分配角色({})]", user.getId(), createReqVO.getRoleIds());
+        } else {
+            // 如果未选择角色，默认分配业务员角色（兜底逻辑）
+            assignDefaultRole(user.getId());
+        }
+
         // 3. 记录操作日志上下文
         LogRecordContext.putVariable("user", user);
         return user.getId();
+    }
+
+    /**
+     * 为新用户分配默认角色
+     *
+     * @param userId 用户ID
+     */
+    private void assignDefaultRole(Long userId) {
+        RoleDO defaultRole = roleService.getRoleByCode(DEFAULT_ROLE_CODE);
+        if (defaultRole != null && CommonStatusEnum.ENABLE.getStatus().equals(defaultRole.getStatus())) {
+            permissionService.assignUserRole(userId, Collections.singleton(defaultRole.getId()));
+            log.info("[assignDefaultRole][用户({}) 自动分配默认角色({})]", userId, DEFAULT_ROLE_CODE);
+        } else {
+            log.warn("[assignDefaultRole][默认角色({})不存在或已禁用，跳过自动分配]", DEFAULT_ROLE_CODE);
+        }
     }
 
     @Override
@@ -157,6 +189,11 @@ public class AdminUserServiceImpl implements AdminUserService {
         userMapper.updateById(updateObj);
         // 2.2 更新岗位
         updateUserPost(updateReqVO, updateObj);
+        // 2.3 更新角色
+        if (updateReqVO.getRoleIds() != null) {
+            permissionService.assignUserRole(updateReqVO.getId(), updateReqVO.getRoleIds());
+            log.info("[updateUser][用户({}) 更新角色({})]", updateReqVO.getId(), updateReqVO.getRoleIds());
+        }
 
         // 3. 记录操作日志上下文
         LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(oldUser, UserSaveReqVO.class));

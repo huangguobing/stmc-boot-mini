@@ -9,8 +9,11 @@ import cn.iocoder.stmc.module.erp.dal.mysql.customer.CustomerMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import cn.hutool.core.collection.CollUtil;
+
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.stmc.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.stmc.module.erp.enums.ErrorCodeConstants.CUSTOMER_NAME_EXISTS;
@@ -98,6 +101,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDO> getCustomerListByStatus(Integer status) {
         return customerMapper.selectList(CustomerDO::getStatus, status);
+    }
+
+    @Override
+    public Map<Long, CustomerDO> getCustomerMap(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+        List<CustomerDO> list = customerMapper.selectBatchIds(ids);
+        return list.stream().collect(Collectors.toMap(CustomerDO::getId, c -> c));
     }
 
 }

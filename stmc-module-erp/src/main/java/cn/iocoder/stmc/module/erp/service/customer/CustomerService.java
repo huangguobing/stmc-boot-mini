@@ -6,7 +6,9 @@ import cn.iocoder.stmc.module.erp.controller.admin.customer.vo.CustomerSaveReqVO
 import cn.iocoder.stmc.module.erp.dal.dataobject.customer.CustomerDO;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ERP 客户 Service 接口
@@ -67,5 +69,13 @@ public interface CustomerService {
      * @return 客户列表
      */
     List<CustomerDO> getCustomerListByStatus(Integer status);
+
+    /**
+     * 获得客户 Map
+     *
+     * @param ids 编号列表
+     * @return 客户 Map
+     */
+    Map<Long, CustomerDO> getCustomerMap(Collection<Long> ids);
 
 }

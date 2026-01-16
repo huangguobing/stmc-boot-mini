@@ -6,7 +6,9 @@ import cn.iocoder.stmc.module.erp.controller.admin.supplier.vo.SupplierSaveReqVO
 import cn.iocoder.stmc.module.erp.dal.dataobject.supplier.SupplierDO;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ERP 供应商 Service 接口
@@ -67,5 +69,13 @@ public interface SupplierService {
      * @return 供应商列表
      */
     List<SupplierDO> getSupplierListByStatus(Integer status);
+
+    /**
+     * 批量获取供应商Map
+     *
+     * @param ids 供应商编号集合
+     * @return 供应商Map
+     */
+    Map<Long, SupplierDO> getSupplierMap(Collection<Long> ids);
 
 }

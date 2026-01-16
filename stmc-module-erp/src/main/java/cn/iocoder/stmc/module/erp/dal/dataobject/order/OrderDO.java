@@ -97,6 +97,60 @@ public class OrderDO extends BaseDO {
     private BigDecimal paidAmount;
 
     /**
+     * 发货费/运费
+     */
+    private BigDecimal shippingFee;
+
+    // ========== 采购成本汇总字段（管理员填充后计算）==========
+
+    /**
+     * 采购总成本
+     */
+    private BigDecimal totalPurchaseAmount;
+
+    /**
+     * 总毛利
+     */
+    private BigDecimal totalGrossProfit;
+
+    /**
+     * 总税额
+     */
+    private BigDecimal totalTaxAmount;
+
+    /**
+     * 总净利
+     */
+    private BigDecimal totalNetProfit;
+
+    /**
+     * 成本是否已填充
+     */
+    private Boolean costFilled;
+
+    /**
+     * 成本填充人ID
+     */
+    private Long costFilledBy;
+
+    /**
+     * 成本填充时间
+     */
+    private LocalDateTime costFilledTime;
+
+    // ========== 业务员信息 ==========
+
+    /**
+     * 业务员ID
+     */
+    private Long salesmanId;
+
+    /**
+     * 业务员姓名
+     */
+    private String salesmanName;
+
+    /**
      * 联系人
      */
     private String contact;

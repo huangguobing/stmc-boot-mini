@@ -21,7 +21,7 @@ public class FileRespVO {
     @Schema(description = "原文件名", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc.jpg")
     private String name;
 
-    @Schema(description = "文件 URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn/yudao.jpg")
+    @Schema(description = "文件 URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn/stmc.jpg")
     private String url;
 
     @Schema(description = "文件MIME类型", example = "application/octet-stream")

@@ -31,7 +31,7 @@ import static cn.iocoder.stmc.module.system.enums.ErrorCodeConstants.SOCIAL_USER
 /**
  * 社交用户 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Validated
@@ -153,7 +153,7 @@ public class SocialUserServiceImpl implements SocialUserService {
         if (socialUser.getId() == null) {
             socialUserMapper.insert(socialUser);
         } else {
-            socialUser.clean(); // 避免 updateTime 不更新：https://gitee.com/yudaocode/yudao-boot-mini/issues/ID7FUL
+            socialUser.clean(); // 避免 updateTime 不更新：https://gitee.com/stmccode/stmc-boot-mini/issues/ID7FUL
             socialUserMapper.updateById(socialUser);
         }
         return socialUser;

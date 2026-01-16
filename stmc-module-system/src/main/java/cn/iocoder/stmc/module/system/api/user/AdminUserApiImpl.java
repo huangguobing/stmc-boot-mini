@@ -22,7 +22,7 @@ import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.c
 /**
  * Admin 用户 API 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 public class AdminUserApiImpl implements AdminUserApi {

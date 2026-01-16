@@ -1,11 +1,16 @@
 package cn.iocoder.stmc.module.erp.controller.admin.order.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "管理后台 - ERP 订单新增/修改 Request VO")
 @Data
@@ -27,10 +32,14 @@ public class OrderSaveReqVO {
     @NotNull(message = "订单类型不能为空")
     private Integer orderType;
 
-    @Schema(description = "订单日期", example = "2023-12-25 10:00:00")
+    @Schema(description = "订单日期", example = "2023-12-25")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime orderDate;
 
-    @Schema(description = "交货日期", example = "2023-12-30 10:00:00")
+    @Schema(description = "交货日期", example = "2023-12-30")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime deliveryDate;
 
     @Schema(description = "商品总数量", example = "100")
@@ -53,5 +62,13 @@ public class OrderSaveReqVO {
 
     @Schema(description = "备注", example = "加急订单")
     private String remark;
+
+    @Schema(description = "发货费/运费", example = "30")
+    private BigDecimal shippingFee;
+
+    @Schema(description = "商品明细列表", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "商品明细不能为空")
+    @Valid
+    private List<OrderItemSaveReqVO> items;
 
 }

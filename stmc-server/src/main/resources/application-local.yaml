@@ -59,11 +59,11 @@ spring:
           username: admin
           password: 123456
           #          username: sa # SQL Server 连接的示例
-          #          password: Yudao@2024 # SQL Server 连接的示例
+          #          password: stmc@2024 # SQL Server 连接的示例
           #          username: SYSDBA # DM 连接的示例
           #          password: SYSDBA001 # DM 连接的示例
           #          username: root # OpenGauss 连接的示例
-          #          password: Yudao@2024 # OpenGauss 连接的示例
+          #          password: stmc@2024 # OpenGauss 连接的示例
         slave: # 模拟从库，可根据自己需要修改
           lazy: true # 开启懒加载，保证启动速度
           url: jdbc:mysql://8.156.76.187:3306/stmc-erp?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCatalogMeansCurrent=true
@@ -82,7 +82,7 @@ spring:
     host: 8.156.76.187 # 地址
     port: 6379 # 端口
     database: 0 # 数据库索引
-#    password: # 无密码
+    password: 123456 # Redis密码
 
 --- #################### 定时任务相关配置 ####################
 

@@ -12,11 +12,21 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum OrderStatusEnum {
 
-    DRAFT(0, "草稿"),
-    PENDING(10, "待确认"),
-    CONFIRMED(20, "已确认"),
-    PROCESSING(30, "执行中"),
-    COMPLETED(40, "已完成"),
+    /**
+     * 待审核 - 业务员提交后的初始状态
+     */
+    PENDING_REVIEW(0, "待审核"),
+    /**
+     * 待填充成本 - 管理员审核通过后，等待填充采购成本
+     */
+    PENDING_COST(10, "待填充成本"),
+    /**
+     * 已完成 - 成本填充完成
+     */
+    COMPLETED(20, "已完成"),
+    /**
+     * 已取消
+     */
     CANCELLED(50, "已取消");
 
     /**

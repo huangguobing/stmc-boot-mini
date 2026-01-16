@@ -1,5 +1,6 @@
 package cn.iocoder.stmc.module.erp.service.supplier;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.stmc.framework.common.pojo.PageResult;
 import cn.iocoder.stmc.framework.common.util.object.BeanUtils;
 import cn.iocoder.stmc.module.erp.controller.admin.supplier.vo.SupplierPageReqVO;
@@ -10,7 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.stmc.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.stmc.module.erp.enums.ErrorCodeConstants.SUPPLIER_NAME_EXISTS;
@@ -97,6 +102,15 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public List<SupplierDO> getSupplierListByStatus(Integer status) {
         return supplierMapper.selectList(SupplierDO::getStatus, status);
+    }
+
+    @Override
+    public Map<Long, SupplierDO> getSupplierMap(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+        List<SupplierDO> list = supplierMapper.selectBatchIds(ids);
+        return list.stream().collect(Collectors.toMap(SupplierDO::getId, s -> s));
     }
 
 }

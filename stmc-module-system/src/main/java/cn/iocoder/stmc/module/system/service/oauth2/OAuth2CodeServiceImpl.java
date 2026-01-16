@@ -18,7 +18,7 @@ import static cn.iocoder.stmc.module.system.enums.ErrorCodeConstants.OAUTH2_CODE
 /**
  * OAuth2.0 授权码 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Validated

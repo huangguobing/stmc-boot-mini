@@ -6,6 +6,8 @@ import cn.iocoder.stmc.module.erp.controller.admin.payment.vo.PaymentSaveReqVO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.payment.PaymentDO;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -31,13 +33,11 @@ public interface PaymentService {
     void updatePayment(@Valid PaymentSaveReqVO updateReqVO);
 
     /**
-     * 审批付款
+     * 更新付款单状态（根据付款计划的完成情况）
      *
-     * @param id 付款编号
-     * @param approved 是否通过
-     * @param remark 审批意见
+     * @param paymentId 付款单编号
      */
-    void approvePayment(Long id, Boolean approved, String remark);
+    void updatePaymentStatus(Long paymentId);
 
     /**
      * 删除付款
@@ -68,5 +68,40 @@ public interface PaymentService {
      * @return 付款分页
      */
     PageResult<PaymentDO> getPaymentPage(PaymentPageReqVO pageReqVO);
+
+    /**
+     * 创建成本填充场景的付款单（单期，不使用供应商账期配置）
+     *
+     * @param supplierId 供应商编号
+     * @param orderId 订单编号
+     * @param amount 付款金额
+     * @param paymentDate 付款日期
+     * @param isPaid 是否已付款
+     * @param remark 备注
+     * @return 付款单编号
+     */
+    Long createPaymentFromCostFill(Long supplierId, Long orderId, BigDecimal amount,
+                                    LocalDate paymentDate, Boolean isPaid, String remark);
+
+    /**
+     * 取消指定订单和供应商的付款单（成本编辑时供应商被移除）
+     *
+     * @param orderId 订单编号
+     * @param supplierId 供应商编号
+     */
+    void cancelPaymentByOrderAndSupplier(Long orderId, Long supplierId);
+
+    /**
+     * 更新付款单（成本编辑时）
+     *
+     * @param orderId 订单编号
+     * @param supplierId 供应商编号
+     * @param newAmount 新金额
+     * @param newPaymentDate 新付款日期
+     * @param newIsPaid 新付款状态
+     * @param newRemark 新备注
+     */
+    void updatePaymentFromCostEdit(Long orderId, Long supplierId, BigDecimal newAmount,
+                                    LocalDate newPaymentDate, Boolean newIsPaid, String newRemark);
 
 }

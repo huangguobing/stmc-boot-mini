@@ -21,11 +21,11 @@ public class CodegenTableSaveReqVO {
     @NotNull(message = "导入类型不能为空")
     private Integer scene;
 
-    @Schema(description = "表名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    @Schema(description = "表名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc")
     @NotNull(message = "表名称不能为空")
     private String tableName;
 
-    @Schema(description = "表描述", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道")
+    @Schema(description = "表描述", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc")
     @NotNull(message = "表描述不能为空")
     private String tableComment;
 
@@ -48,7 +48,7 @@ public class CodegenTableSaveReqVO {
     @NotNull(message = "类描述不能为空")
     private String classComment;
 
-    @Schema(description = "作者", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道源码")
+    @Schema(description = "作者", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc源码")
     @NotNull(message = "作者不能为空")
     private String author;
 

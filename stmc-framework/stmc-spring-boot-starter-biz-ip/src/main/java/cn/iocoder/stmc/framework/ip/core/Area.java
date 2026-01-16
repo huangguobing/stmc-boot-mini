@@ -15,12 +15,12 @@ import java.util.List;
  *
  * 数据可见 resources/area.csv 文件
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"parent"}) // 参见 https://gitee.com/yudaocode/yudao-cloud-mini/pulls/2 原因
+@ToString(exclude = {"parent"}) // 参见 https://gitee.com/stmccode/stmc-cloud-mini/pulls/2 原因
 public class Area {
 
     /**

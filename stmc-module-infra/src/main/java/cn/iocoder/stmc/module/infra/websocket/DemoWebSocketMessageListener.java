@@ -13,13 +13,13 @@ import org.springframework.web.socket.WebSocketSession;
 /**
  * WebSocket 示例：单发消息
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Component
 public class DemoWebSocketMessageListener implements WebSocketMessageListener<DemoSendMessage> {
 
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Autowired(required = false) // 由于 yudao.websocket.enable 配置项，可以关闭 WebSocket 的功能，所以这里只能不强制注入
+    @Autowired(required = false) // 由于 stmc.websocket.enable 配置项，可以关闭 WebSocket 的功能，所以这里只能不强制注入
     private WebSocketMessageSender webSocketMessageSender;
 
     @Override

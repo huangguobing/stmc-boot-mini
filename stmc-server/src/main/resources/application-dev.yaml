@@ -61,7 +61,7 @@ spring:
     host: 8.156.76.187 # 地址
     port: 6379 # 端口
     database: 0 # 数据库索引
-#    password: # 无密码
+    password: 123456
 
 --- #################### 定时任务相关配置 ####################
 
@@ -164,10 +164,10 @@ wx: # 参见 https://github.com/Wechat-Group/WxJava/blob/develop/spring-boot-sta
       key-prefix: wa # Redis Key 的前缀
       http-client-type: HttpClient # 采用 HttpClient 请求微信公众号平台
 
---- #################### 芋道相关配置 ####################
+--- #################### stmc相关配置 ####################
 
-# 芋道配置项，设置当前项目所有自定义的配置
-yudao:
+# stmc配置项，设置当前项目所有自定义的配置
+stmc:
   pay:
     order-notify-url: http://yunai.natapp1.cc/admin-api/pay/notify/order # 支付渠道的【支付】回调地址
     refund-notify-url: http://yunai.natapp1.cc/admin-api/pay/notify/refund # 支付渠道的【退款】回调地址

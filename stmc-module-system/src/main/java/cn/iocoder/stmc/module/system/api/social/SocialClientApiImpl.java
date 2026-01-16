@@ -24,7 +24,7 @@ import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.c
 /**
  * 社交应用的 API 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Validated

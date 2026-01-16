@@ -37,4 +37,7 @@ public class OrderPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "业务员ID（数据权限过滤，内部使用）", hidden = true)
+    private Long salesmanId;
+
 }

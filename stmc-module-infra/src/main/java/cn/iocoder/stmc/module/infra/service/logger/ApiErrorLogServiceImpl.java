@@ -25,7 +25,7 @@ import static cn.iocoder.stmc.module.infra.enums.ErrorCodeConstants.API_ERROR_LO
 /**
  * API 错误日志 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Validated
@@ -48,7 +48,7 @@ public class ApiErrorLogServiceImpl implements ApiErrorLogService {
                 TenantUtils.executeIgnore(() -> apiErrorLogMapper.insert(apiErrorLog));
             }
         } catch (Exception ex) {
-            // 兜底处理，目前只有 yudao-cloud 会发生：https://gitee.com/yudaocode/yudao-cloud-mini/issues/IC1O0A
+            // 兜底处理，目前只有 stmc-cloud 会发生：https://gitee.com/stmccode/stmc-cloud-mini/issues/IC1O0A
             log.error("[createApiErrorLog][记录时({}) 发生异常]", createDTO, ex);
         }
     }

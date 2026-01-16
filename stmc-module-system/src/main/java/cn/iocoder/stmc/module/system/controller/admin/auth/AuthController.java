@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.stmc.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.stmc.framework.common.enums.UserTypeEnum;
+import cn.iocoder.stmc.framework.common.exception.util.ServiceExceptionUtil;
 import cn.iocoder.stmc.framework.common.pojo.CommonResult;
 import cn.iocoder.stmc.framework.security.config.SecurityProperties;
 import cn.iocoder.stmc.framework.security.core.util.SecurityFrameworkUtils;
@@ -38,6 +39,7 @@ import java.util.Set;
 import static cn.iocoder.stmc.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.stmc.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
+import static cn.iocoder.stmc.module.system.enums.ErrorCodeConstants.*;
 
 @Tag(name = "管理后台 - 认证")
 @RestController
@@ -117,58 +119,59 @@ public class AuthController {
 
     @PostMapping("/register")
     @PermitAll
-    @Operation(summary = "注册用户")
+    @Operation(summary = "注册用户（已禁用）")
     public CommonResult<AuthLoginRespVO> register(@RequestBody @Valid AuthRegisterReqVO registerReqVO) {
-        return success(authService.register(registerReqVO));
+        // 注册功能已禁用，只允许管理员分配账号
+        throw ServiceExceptionUtil.exception(AUTH_REGISTER_DISABLED);
     }
 
     // ========== 短信登录相关 ==========
 
     @PostMapping("/sms-login")
     @PermitAll
-    @Operation(summary = "使用短信验证码登录")
-    // 可按需开启限流：https://github.com/YunaiV/ruoyi-vue-pro/issues/851
-    // @RateLimiter(time = 60, count = 6, keyResolver = ExpressionRateLimiterKeyResolver.class, keyArg = "#reqVO.mobile")
+    @Operation(summary = "使用短信验证码登录（已禁用）")
     public CommonResult<AuthLoginRespVO> smsLogin(@RequestBody @Valid AuthSmsLoginReqVO reqVO) {
-        return success(authService.smsLogin(reqVO));
+        // 短信登录功能已禁用
+        throw ServiceExceptionUtil.exception(AUTH_SMS_LOGIN_DISABLED);
     }
 
     @PostMapping("/send-sms-code")
     @PermitAll
-    @Operation(summary = "发送手机验证码")
+    @Operation(summary = "发送手机验证码（已禁用）")
     public CommonResult<Boolean> sendLoginSmsCode(@RequestBody @Valid AuthSmsSendReqVO reqVO) {
-        authService.sendSmsCode(reqVO);
-        return success(true);
+        // 短信功能已禁用
+        throw ServiceExceptionUtil.exception(AUTH_SMS_LOGIN_DISABLED);
     }
 
     @PostMapping("/reset-password")
     @PermitAll
-    @Operation(summary = "重置密码")
+    @Operation(summary = "重置密码（已禁用）")
     public CommonResult<Boolean> resetPassword(@RequestBody @Valid AuthResetPasswordReqVO reqVO) {
-        authService.resetPassword(reqVO);
-        return success(true);
+        // 密码重置功能已禁用，请联系管理员
+        throw ServiceExceptionUtil.exception(AUTH_RESET_PASSWORD_DISABLED);
     }
 
-    // ========== 社交登录相关 ==========
+    // ========== 社交登录相关（已禁用） ==========
 
     @GetMapping("/social-auth-redirect")
     @PermitAll
-    @Operation(summary = "社交授权的跳转")
+    @Operation(summary = "社交授权的跳转（已禁用）")
     @Parameters({
             @Parameter(name = "type", description = "社交类型", required = true),
             @Parameter(name = "redirectUri", description = "回调路径")
     })
     public CommonResult<String> socialLogin(@RequestParam("type") Integer type,
                                             @RequestParam("redirectUri") String redirectUri) {
-        return success(socialClientService.getAuthorizeUrl(
-                type, UserTypeEnum.ADMIN.getValue(), redirectUri));
+        // 社交登录功能已禁用
+        throw ServiceExceptionUtil.exception(AUTH_SOCIAL_LOGIN_DISABLED);
     }
 
     @PostMapping("/social-login")
     @PermitAll
-    @Operation(summary = "社交快捷登录，使用 code 授权码", description = "适合未登录的用户，但是社交账号已绑定用户")
+    @Operation(summary = "社交快捷登录（已禁用）")
     public CommonResult<AuthLoginRespVO> socialQuickLogin(@RequestBody @Valid AuthSocialLoginReqVO reqVO) {
-        return success(authService.socialLogin(reqVO));
+        // 社交登录功能已禁用
+        throw ServiceExceptionUtil.exception(AUTH_SOCIAL_LOGIN_DISABLED);
     }
 
 }

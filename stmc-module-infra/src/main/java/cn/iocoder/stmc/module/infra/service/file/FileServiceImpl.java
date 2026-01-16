@@ -29,7 +29,7 @@ import static cn.iocoder.stmc.module.infra.enums.ErrorCodeConstants.FILE_NOT_EXI
 /**
  * 文件 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 public class FileServiceImpl implements FileService {

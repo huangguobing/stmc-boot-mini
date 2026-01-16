@@ -15,7 +15,7 @@
 |------|------|
 | 项目名称 | 尚泰铭成ERP管理系统 |
 | 品牌标识 | STMC (ShangtaiMingchen) |
-| 基础框架 | 芋道 ruoyi-vue-pro 精简版 |
+| 基础框架 | stmc ruoyi-vue-pro 精简版 |
 | 后端技术栈 | Spring Boot 2.7.18 + MyBatis-Plus + Redis |
 | 前端技术栈 | Vue 3 + TypeScript + Vite + Element Plus |
 | Java版本 | JDK 8 |
@@ -26,7 +26,7 @@
 G:/code/shangtaimingchen_erp/
 ├── stmc-boot-mini/          # 后端项目（已完成品牌重塑）
 ├── stmc-ui-admin-vue3/      # 前端项目
-└── yudao-boot-mini/         # 空目录（可删除）
+└── stmc-boot-mini/         # 空目录（可删除）
 ```
 
 ### 1.3 GitHub 仓库配置
@@ -44,8 +44,8 @@ G:/code/shangtaimingchen_erp/
 
 | 步骤 | 状态 | 说明 |
 |------|------|------|
-| 1. 下载后端框架 | ✅ | yudao-boot-mini 精简版 |
-| 2. 下载前端项目 | ✅ | yudao-ui-admin-vue3 |
+| 1. 下载后端框架 | ✅ | stmc-boot-mini 精简版 |
+| 2. 下载前端项目 | ✅ | stmc-ui-admin-vue3 |
 | 3. 禁用多租户 | ✅ | stmc.tenant.enable: false |
 | 4. Maven插件降级 | ✅ | 兼容Maven 3.6.0 |
 | 5. 验证编译 | ✅ | BUILD SUCCESS |
@@ -57,14 +57,14 @@ maven-compiler-plugin: 3.14.0 → 3.11.0
 maven-surefire-plugin: 3.5.3 → 3.0.0
 ```
 
-### 阶段二：品牌重塑 (yudao → stmc) ✅
+### 阶段二：品牌重塑 (stmc → stmc) ✅
 
 | 步骤 | 状态 | 影响范围 | 说明 |
 |------|------|----------|------|
-| Step 1: 目录重命名 | ✅ | 20+目录 | yudao-* → stmc-* |
+| Step 1: 目录重命名 | ✅ | 20+目录 | stmc-* → stmc-* |
 | Step 2: pom.xml替换 | ✅ | 20个文件 | artifactId 全部替换 |
-| Step 3: Java包名重构 | ✅ | 956+文件 | cn.iocoder.yudao → cn.iocoder.stmc |
-| Step 4: Java类名重命名 | ✅ | 36个文件 | YudaoXxx.java → StmcXxx.java |
+| Step 3: Java包名重构 | ✅ | 956+文件 | cn.iocoder.stmc → cn.iocoder.stmc |
+| Step 4: Java类名重命名 | ✅ | 36个文件 | stmcXxx.java → StmcXxx.java |
 | Step 5: 配置文件修改 | ✅ | 2个文件 | application*.yaml |
 | Step 6: META-INF修改 | ✅ | 14个文件 | AutoConfiguration.imports |
 | Step 7: 验证编译 | ✅ | 20个模块 | BUILD SUCCESS (52.9s) |
@@ -96,9 +96,9 @@ maven-surefire-plugin: 3.5.3 → 3.0.0
    ```
 
 2. **配置前缀**：
-   - `yudao.*` → `stmc.*`
-   - `${yudao.info.base-package}` → `${stmc.info.base-package}`
-   - `@ConfigurationProperties("yudao.xxx")` → `@ConfigurationProperties("stmc.xxx")`
+   - `stmc.*` → `stmc.*`
+   - `${stmc.info.base-package}` → `${stmc.info.base-package}`
+   - `@ConfigurationProperties("stmc.xxx")` → `@ConfigurationProperties("stmc.xxx")`
 
 3. **关键类名映射**：
    ```

@@ -52,7 +52,7 @@ import java.util.Set;
 import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.convertList;
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "stmc.tenant", value = "enable", matchIfMissing = true) // 允许使用 yudao.tenant.enable=false 禁用多租户
+@ConditionalOnProperty(prefix = "stmc.tenant", value = "enable", matchIfMissing = true) // 允许使用 stmc.tenant.enable=false 禁用多租户
 @EnableConfigurationProperties(TenantProperties.class)
 public class StmcTenantAutoConfiguration {
 
@@ -188,12 +188,12 @@ public class StmcTenantAutoConfiguration {
     @Primary // 引入租户时，tenantRedisCacheManager 为主 Bean
     public RedisCacheManager tenantRedisCacheManager(RedisTemplate<String, Object> redisTemplate,
                                                      RedisCacheConfiguration redisCacheConfiguration,
-                                                     StmcCacheProperties yudaoCacheProperties,
+                                                     StmcCacheProperties stmcCacheProperties,
                                                      TenantProperties tenantProperties) {
         // 创建 RedisCacheWriter 对象
         RedisConnectionFactory connectionFactory = Objects.requireNonNull(redisTemplate.getConnectionFactory());
         RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory,
-                BatchStrategies.scan(yudaoCacheProperties.getRedisScanBatchSize()));
+                BatchStrategies.scan(stmcCacheProperties.getRedisScanBatchSize()));
         // 创建 TenantRedisCacheManager 对象
         return new TenantRedisCacheManager(cacheWriter, redisCacheConfiguration, tenantProperties.getIgnoreCaches());
     }

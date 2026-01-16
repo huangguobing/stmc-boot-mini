@@ -18,7 +18,7 @@ import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.c
 /**
  * 字典工具类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Slf4j
 public class DictFrameworkUtils {

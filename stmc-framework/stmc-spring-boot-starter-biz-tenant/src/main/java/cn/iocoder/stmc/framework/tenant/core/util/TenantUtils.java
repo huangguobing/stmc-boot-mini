@@ -10,7 +10,7 @@ import static cn.iocoder.stmc.framework.web.core.util.WebFrameworkUtils.HEADER_T
 /**
  * 多租户 Util
  *
- * @author 芋道源码
+ * @author bsl
  */
 public class TenantUtils {
 

@@ -29,7 +29,7 @@ import java.util.Set;
  * 2. 如果请求未带租户的编号，检查是否是忽略的 URL，否则也不允许访问。
  * 3. 校验租户是合法，例如说被禁用、到期
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Slf4j
 public class TenantSecurityWebFilter extends ApiRequestFilter {
@@ -39,7 +39,7 @@ public class TenantSecurityWebFilter extends ApiRequestFilter {
     /**
      * 允许忽略租户的 URL 列表
      *
-     * 目的：解决 <a href="https://gitee.com/zhijiantianya/yudao-cloud/issues/ICUQL9">修改配置会导致 @TenantIgnore Controller 接口过滤失效</>
+     * 目的：解决 <a href="https://gitee.com/zhijiantianya/stmc-cloud/issues/ICUQL9">修改配置会导致 @TenantIgnore Controller 接口过滤失效</>
      */
     private final Set<String> ignoreUrls;
 

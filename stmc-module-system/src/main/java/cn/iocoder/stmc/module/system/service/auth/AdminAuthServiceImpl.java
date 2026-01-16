@@ -46,7 +46,7 @@ import static cn.iocoder.stmc.module.system.enums.ErrorCodeConstants.*;
 /**
  * Auth Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Slf4j

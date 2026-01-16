@@ -48,7 +48,7 @@ springdoc:
   default-flat-param-object: true # 参见 https://doc.xiaominfo.com/docs/faq/v4/knife4j-parameterobject-flat-param 文档
 
 knife4j:
-  enable: false # 禁用多租户
+  enable: true # 启用 Knife4j 增强
   setting:
     language: zh_cn
 
@@ -263,7 +263,7 @@ stmc:
     base-package: cn.iocoder.stmc
   web:
     admin-ui:
-      url: http://dashboard.yudao.iocoder.cn # Admin 管理后台 UI 的地址
+      url: http://dashboard.stmc.iocoder.cn # Admin 管理后台 UI 的地址
   xss:
     enable: false
     exclude-urls: # 如下两个 url，仅仅是为了演示，去掉配置也没关系

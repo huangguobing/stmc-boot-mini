@@ -3,7 +3,7 @@ package cn.iocoder.stmc.module.infra.framework.file.core.client;
 /**
  * 文件客户端
  *
- * @author 芋道源码
+ * @author bsl
  */
 public interface FileClient {
 

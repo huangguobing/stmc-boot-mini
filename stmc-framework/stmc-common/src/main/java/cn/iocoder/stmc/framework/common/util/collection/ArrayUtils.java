@@ -13,7 +13,7 @@ import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.c
 /**
  * Array 工具类
  *
- * @author 芋道源码
+ * @author bsl
  */
 public class ArrayUtils {
 

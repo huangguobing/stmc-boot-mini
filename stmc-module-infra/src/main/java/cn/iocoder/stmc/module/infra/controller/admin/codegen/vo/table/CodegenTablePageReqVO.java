@@ -13,10 +13,10 @@ import static cn.iocoder.stmc.framework.common.util.date.DateUtils.FORMAT_YEAR_M
 @Data
 public class CodegenTablePageReqVO extends PageParam {
 
-    @Schema(description = "表名称，模糊匹配", example = "yudao")
+    @Schema(description = "表名称，模糊匹配", example = "stmc")
     private String tableName;
 
-    @Schema(description = "表描述，模糊匹配", example = "芋道")
+    @Schema(description = "表描述，模糊匹配", example = "stmc")
     private String tableComment;
 
     @Schema(description = "实体，模糊匹配", example = "Stmc")

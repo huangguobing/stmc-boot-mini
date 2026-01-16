@@ -12,11 +12,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PaymentStatusEnum {
 
-    PENDING(0, "待审批"),
-    APPROVED(10, "已审批"),
-    PAID(20, "已付款"),
-    REJECTED(30, "已拒绝"),
-    CANCELLED(40, "已取消");
+    PENDING(0, "待付款"),
+    PARTIAL(10, "部分付款"),
+    COMPLETED(20, "已完成"),
+    CANCELLED(30, "已取消");
 
     /**
      * 状态值

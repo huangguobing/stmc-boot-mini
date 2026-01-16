@@ -39,7 +39,7 @@ import static cn.iocoder.stmc.framework.common.util.json.JsonUtils.toJsonString;
 /**
  * 权限 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Slf4j

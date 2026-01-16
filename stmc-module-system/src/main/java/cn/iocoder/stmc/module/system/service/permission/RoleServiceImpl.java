@@ -39,7 +39,7 @@ import static cn.iocoder.stmc.module.system.enums.LogRecordConstants.*;
 /**
  * 角色 Service 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Service
 @Slf4j
@@ -260,6 +260,11 @@ public class RoleServiceImpl implements RoleService {
                 throw exception(ROLE_IS_DISABLE, role.getName());
             }
         });
+    }
+
+    @Override
+    public RoleDO getRoleByCode(String code) {
+        return roleMapper.selectByCode(code);
     }
 
     /**

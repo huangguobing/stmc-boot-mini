@@ -1,12 +1,19 @@
 package cn.iocoder.stmc.module.erp.service.order;
 
 import cn.iocoder.stmc.framework.common.pojo.PageResult;
+import cn.iocoder.stmc.module.erp.controller.admin.order.vo.OrderCostFillReqVO;
 import cn.iocoder.stmc.module.erp.controller.admin.order.vo.OrderPageReqVO;
 import cn.iocoder.stmc.module.erp.controller.admin.order.vo.OrderSaveReqVO;
+import cn.iocoder.stmc.module.erp.dal.dataobject.customer.CustomerDO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.order.OrderDO;
+import cn.iocoder.stmc.module.erp.dal.dataobject.order.OrderItemDO;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ERP 订单 Service 接口
@@ -90,5 +97,86 @@ public interface OrderService {
      * @param paidAmount 已付金额增量
      */
     void updateOrderPaidAmount(Long id, java.math.BigDecimal paidAmount);
+
+    /**
+     * 批量获取订单Map
+     *
+     * @param ids 订单编号集合
+     * @return 订单Map
+     */
+    Map<Long, OrderDO> getOrderMap(Collection<Long> ids);
+
+    // ========== 订单明细相关 ==========
+
+    /**
+     * 获取订单明细列表
+     *
+     * @param orderId 订单ID
+     * @return 明细列表
+     */
+    List<OrderItemDO> getOrderItemList(Long orderId);
+
+    /**
+     * 批量获取订单明细列表
+     *
+     * @param orderIds 订单ID列表
+     * @return 明细列表
+     */
+    List<OrderItemDO> getOrderItemListByOrderIds(List<Long> orderIds);
+
+    // ========== 成本填充相关 ==========
+
+    /**
+     * 填充订单成本（管理员操作）
+     *
+     * @param fillReqVO 成本填充信息
+     */
+    void fillOrderCost(@Valid OrderCostFillReqVO fillReqVO);
+
+    /**
+     * 编辑订单成本（已完成状态）
+     *
+     * @param editReqVO 成本编辑请求
+     */
+    void editOrderCost(@Valid OrderCostFillReqVO editReqVO);
+
+    /**
+     * 审核订单（通过）
+     *
+     * @param id 订单ID
+     */
+    void approveOrder(Long id);
+
+    /**
+     * 审核订单（拒绝）
+     *
+     * @param id 订单ID
+     * @param reason 拒绝原因
+     */
+    void rejectOrder(Long id, String reason);
+
+    // ========== 打印导出相关 ==========
+
+    /**
+     * 生成订单打印Excel（客户联开单）
+     *
+     * @param order 订单信息
+     * @param customer 客户信息
+     * @param items 订单明细列表
+     * @param salesmanName 销售员姓名
+     * @param response HTTP响应对象
+     */
+    void generatePrintExcel(OrderDO order, CustomerDO customer,
+                           List<OrderItemDO> items, String salesmanName,
+                           HttpServletResponse response) throws IOException;
+
+    // ========== 付款相关 ==========
+
+    /**
+     * 标注订单为已付款
+     *
+     * @param id 订单编号
+     */
+    void markOrderAsPaid(Long id);
 
 }

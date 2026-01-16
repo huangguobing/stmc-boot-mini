@@ -14,7 +14,7 @@ import static cn.iocoder.stmc.framework.security.core.util.SecurityFrameworkUtil
 /**
  * 默认的 {@link SecurityFrameworkService} 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @AllArgsConstructor
 public class SecurityFrameworkServiceImpl implements SecurityFrameworkService {

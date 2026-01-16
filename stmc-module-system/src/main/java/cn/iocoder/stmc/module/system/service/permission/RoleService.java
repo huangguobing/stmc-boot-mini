@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * 角色 Service 接口
  *
- * @author 芋道源码
+ * @author bsl
  */
 public interface RoleService {
 
@@ -127,5 +127,13 @@ public interface RoleService {
      * @param ids 角色编号数组
      */
     void validateRoleList(Collection<Long> ids);
+
+    /**
+     * 根据角色编码获得角色
+     *
+     * @param code 角色编码
+     * @return 角色
+     */
+    RoleDO getRoleByCode(String code);
 
 }

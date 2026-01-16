@@ -13,7 +13,7 @@ public class SmsChannelSaveReqVO {
     @Schema(description = "编号", example = "1024")
     private Long id;
 
-    @Schema(description = "短信签名", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道源码")
+    @Schema(description = "短信签名", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc源码")
     @NotNull(message = "短信签名不能为空")
     private String signature;
 
@@ -28,7 +28,7 @@ public class SmsChannelSaveReqVO {
     @Schema(description = "备注", example = "好吃！")
     private String remark;
 
-    @Schema(description = "短信 API 的账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    @Schema(description = "短信 API 的账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc")
     @NotNull(message = "短信 API 的账号不能为空")
     private String apiKey;
 

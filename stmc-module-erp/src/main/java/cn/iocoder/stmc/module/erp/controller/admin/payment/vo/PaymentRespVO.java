@@ -28,6 +28,12 @@ public class PaymentRespVO {
     @Schema(description = "订单号", example = "PO202312250001")
     private String orderNo;
 
+    @Schema(description = "客户名称", example = "客户A")
+    private String customerName;
+
+    @Schema(description = "开单业务员", example = "张三")
+    private String salesmanName;
+
     @Schema(description = "付款类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer paymentType;
 

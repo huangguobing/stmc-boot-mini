@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 /**
  * WebSocket 发送器的 API 实现类
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Component
 public class WebSocketSenderApiImpl implements WebSocketSenderApi {
 
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Autowired(required = false) // 由于 yudao.websocket.enable 配置项，可以关闭 WebSocket 的功能，所以这里只能不强制注入
+    @Autowired(required = false) // 由于 stmc.websocket.enable 配置项，可以关闭 WebSocket 的功能，所以这里只能不强制注入
     private WebSocketMessageSender webSocketMessageSender;
 
     @Override

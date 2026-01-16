@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * 基于 MyBatis Plus 多租户的功能，实现 DB 层面的多租户的功能
  *
- * @author 芋道源码
+ * @author bsl
  */
 public class TenantDatabaseInterceptor implements TenantLineHandler {
 
@@ -66,7 +66,7 @@ public class TenantDatabaseInterceptor implements TenantLineHandler {
     }
 
     private boolean computeIgnoreTable(String tableName) {
-        // 找不到的表，说明不是 yudao 项目里的，不进行拦截（忽略租户）
+        // 找不到的表，说明不是 stmc 项目里的，不进行拦截（忽略租户）
         TableInfo tableInfo = TableInfoHelper.getTableInfo(tableName);
         if (tableInfo == null) {
             return true;

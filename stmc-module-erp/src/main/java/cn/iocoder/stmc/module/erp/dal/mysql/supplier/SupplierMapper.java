@@ -23,7 +23,7 @@ public interface SupplierMapper extends BaseMapperX<SupplierDO> {
                 .likeIfPresent(SupplierDO::getMobile, reqVO.getMobile())
                 .eqIfPresent(SupplierDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(SupplierDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(SupplierDO::getId));
+                .orderByDesc(SupplierDO::getCreateTime));
     }
 
     default SupplierDO selectByName(String name) {

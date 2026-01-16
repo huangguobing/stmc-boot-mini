@@ -31,4 +31,29 @@ public interface PaymentMapper extends BaseMapperX<PaymentDO> {
         return selectOne(PaymentDO::getPaymentNo, paymentNo);
     }
 
+    /**
+     * 根据订单ID和供应商ID查询付款单
+     *
+     * @param orderId 订单ID
+     * @param supplierId 供应商ID
+     * @return 付款单
+     */
+    default PaymentDO selectByOrderIdAndSupplierId(Long orderId, Long supplierId) {
+        return selectOne(new LambdaQueryWrapperX<PaymentDO>()
+                .eq(PaymentDO::getOrderId, orderId)
+                .eq(PaymentDO::getSupplierId, supplierId)
+                .last("LIMIT 1"));
+    }
+
+    /**
+     * 根据订单ID物理删除付款单
+     *
+     * @param orderId 订单ID
+     * @return 删除的记录数
+     */
+    default int deleteByOrderId(Long orderId) {
+        return delete(new LambdaQueryWrapperX<PaymentDO>()
+                .eq(PaymentDO::getOrderId, orderId));
+    }
+
 }

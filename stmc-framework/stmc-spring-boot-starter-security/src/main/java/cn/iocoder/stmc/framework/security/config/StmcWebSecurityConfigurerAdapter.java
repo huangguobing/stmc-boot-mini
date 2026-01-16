@@ -41,7 +41,7 @@ import static cn.iocoder.stmc.framework.common.util.collection.CollectionUtils.c
 /**
  * 自定义的 Spring Security 配置适配器实现
  *
- * @author 芋道源码
+ * @author bsl
  */
 @AutoConfiguration
 @AutoConfigureOrder(-1) // 目的：先于 Spring Security 自动配置，避免一键改包后，org.* 基础包无法生效
@@ -137,7 +137,7 @@ public class StmcWebSecurityConfigurerAdapter {
                     .requestMatchers(HttpMethod.DELETE, permitAllUrls.get(HttpMethod.DELETE).toArray(new String[0])).permitAll()
                     .requestMatchers(HttpMethod.HEAD, permitAllUrls.get(HttpMethod.HEAD).toArray(new String[0])).permitAll()
                     .requestMatchers(HttpMethod.PATCH, permitAllUrls.get(HttpMethod.PATCH).toArray(new String[0])).permitAll()
-                    // 1.3 基于 yudao.security.permit-all-urls 无需认证
+                    // 1.3 基于 stmc.security.permit-all-urls 无需认证
                     .requestMatchers(securityProperties.getPermitAllUrls().toArray(new String[0])).permitAll()
                 )
                 // ②：每个项目的自定义规则

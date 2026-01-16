@@ -15,10 +15,10 @@ public class CodegenTableRespVO {
     @Schema(description = "生成场景，参见 CodegenSceneEnum 枚举", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer scene;
 
-    @Schema(description = "表名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    @Schema(description = "表名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc")
     private String tableName;
 
-    @Schema(description = "表描述", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道")
+    @Schema(description = "表描述", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc")
     private String tableComment;
 
     @Schema(description = "备注", example = "我是备注")
@@ -36,7 +36,7 @@ public class CodegenTableRespVO {
     @Schema(description = "类描述", requiredMode = Schema.RequiredMode.REQUIRED, example = "代码生成器的表定义")
     private String classComment;
 
-    @Schema(description = "作者", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道源码")
+    @Schema(description = "作者", requiredMode = Schema.RequiredMode.REQUIRED, example = "stmc源码")
     private String author;
 
     @Schema(description = "模板类型，参见 CodegenTemplateTypeEnum 枚举", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

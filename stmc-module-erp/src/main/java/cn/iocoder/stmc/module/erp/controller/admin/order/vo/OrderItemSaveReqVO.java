@@ -1,0 +1,40 @@
+package cn.iocoder.stmc.module.erp.controller.admin.order.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+
+@Schema(description = "管理后台 - ERP 订单明细新增/修改 Request VO")
+@Data
+public class OrderItemSaveReqVO {
+
+    @Schema(description = "明细ID（修改时传）", example = "1")
+    private Long id;
+
+    // ========== 业务员填写字段（销售信息）==========
+
+    @Schema(description = "商品名称", example = "衬塑钢卡")
+    private String productName;
+
+    @Schema(description = "规格（如DN150、DN100）", example = "DN150")
+    private String spec;
+
+    @Schema(description = "销售单位（个、吨等）", example = "个")
+    private String saleUnit;
+
+    @Schema(description = "销售数量", example = "50")
+    private BigDecimal saleQuantity;
+
+    @Schema(description = "销售单价", example = "17")
+    private BigDecimal salePrice;
+
+    @Schema(description = "销售金额（数量*单价，前端计算）", example = "850")
+    private BigDecimal saleAmount;
+
+    @Schema(description = "销售备注（如45度、90度）", example = "45度")
+    private String saleRemark;
+
+}

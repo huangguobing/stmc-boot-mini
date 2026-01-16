@@ -3,7 +3,9 @@ package cn.iocoder.stmc.module.erp.controller.admin.supplier.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "管理后台 - ERP 供应商 Response VO")
 @Data
@@ -45,6 +47,12 @@ public class SupplierRespVO {
     @Schema(description = "账期天数", example = "30")
     private Integer paymentDays;
 
+    @Schema(description = "账期分期配置列表")
+    private List<PaymentTermConfigItem> paymentTermConfigs;
+
+    @Schema(description = "账期分期摘要", example = "3期（0天50%/7天30%/15天20%）")
+    private String paymentTermSummary;
+
     @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "0")
     private Integer status;
 
@@ -56,5 +64,20 @@ public class SupplierRespVO {
 
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
+
+    /**
+     * 账期分期配置项（简化版）
+     */
+    @Data
+    public static class PaymentTermConfigItem {
+        @Schema(description = "期数", example = "1")
+        private Integer stage;
+
+        @Schema(description = "付款后天数", example = "0")
+        private Integer daysAfterOrder;
+
+        @Schema(description = "付款比例(%)", example = "50.00")
+        private BigDecimal percentage;
+    }
 
 }

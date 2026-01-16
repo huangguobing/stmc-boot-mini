@@ -50,8 +50,8 @@ public class CodegenController {
     @Operation(summary = "获得数据库自带的表定义列表", description = "会过滤掉已经导入 Codegen 的表")
     @Parameters({
             @Parameter(name = "dataSourceConfigId", description = "数据源配置的编号", required = true, example = "1"),
-            @Parameter(name = "name", description = "表名，模糊匹配", example = "yudao"),
-            @Parameter(name = "comment", description = "描述，模糊匹配", example = "芋道")
+            @Parameter(name = "name", description = "表名，模糊匹配", example = "stmc"),
+            @Parameter(name = "comment", description = "描述，模糊匹配", example = "stmc")
     })
     @PreAuthorize("@ss.hasPermission('infra:codegen:query')")
     public CommonResult<List<DatabaseTableRespVO>> getDatabaseTableList(

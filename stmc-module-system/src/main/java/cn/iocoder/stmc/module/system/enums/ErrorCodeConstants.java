@@ -16,6 +16,10 @@ public interface ErrorCodeConstants {
     ErrorCode AUTH_THIRD_LOGIN_NOT_BIND = new ErrorCode(1_002_000_005, "未绑定账号，需要进行绑定");
     ErrorCode AUTH_MOBILE_NOT_EXISTS = new ErrorCode(1_002_000_007, "手机号不存在");
     ErrorCode AUTH_REGISTER_CAPTCHA_CODE_ERROR = new ErrorCode(1_002_000_008, "验证码不正确，原因：{}");
+    ErrorCode AUTH_REGISTER_DISABLED = new ErrorCode(1_002_000_009, "注册功能已禁用，请联系管理员分配账号");
+    ErrorCode AUTH_SMS_LOGIN_DISABLED = new ErrorCode(1_002_000_010, "短信登录功能已禁用");
+    ErrorCode AUTH_SOCIAL_LOGIN_DISABLED = new ErrorCode(1_002_000_011, "社交登录功能已禁用");
+    ErrorCode AUTH_RESET_PASSWORD_DISABLED = new ErrorCode(1_002_000_012, "密码重置功能已禁用，请联系管理员");
 
     // ========== 菜单模块 1-002-001-000 ==========
     ErrorCode MENU_NAME_DUPLICATE = new ErrorCode(1_002_001_000, "已经存在该名字的菜单");

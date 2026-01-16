@@ -44,7 +44,7 @@ import static cn.iocoder.stmc.framework.common.util.json.JsonUtils.toJsonString;
  *
  * 目的：记录 API 访问日志到数据库中
  *
- * @author 芋道源码
+ * @author bsl
  */
 @Slf4j
 public class ApiAccessLogFilter extends ApiRequestFilter {

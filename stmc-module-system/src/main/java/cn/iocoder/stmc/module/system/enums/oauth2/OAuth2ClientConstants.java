@@ -3,7 +3,7 @@ package cn.iocoder.stmc.module.system.enums.oauth2;
 /**
  * OAuth2.0 客户端的通用枚举
  *
- * @author 芋道源码
+ * @author bsl
  */
 public interface OAuth2ClientConstants {
 
