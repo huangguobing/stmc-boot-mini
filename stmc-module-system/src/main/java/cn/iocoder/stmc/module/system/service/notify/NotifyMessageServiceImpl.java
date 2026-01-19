@@ -29,10 +29,17 @@ public class NotifyMessageServiceImpl implements NotifyMessageService {
     @Override
     public Long createNotifyMessage(Long userId, Integer userType,
                                     NotifyTemplateDO template, String templateContent, Map<String, Object> templateParams) {
+        return createNotifyMessage(userId, userType, template, templateContent, templateParams, null);
+    }
+
+    @Override
+    public Long createNotifyMessage(Long userId, Integer userType,
+                                    NotifyTemplateDO template, String templateContent, Map<String, Object> templateParams, Long businessId) {
         NotifyMessageDO message = new NotifyMessageDO().setUserId(userId).setUserType(userType)
                 .setTemplateId(template.getId()).setTemplateCode(template.getCode())
                 .setTemplateType(template.getType()).setTemplateNickname(template.getNickname())
-                .setTemplateContent(templateContent).setTemplateParams(templateParams).setReadStatus(false);
+                .setTemplateContent(templateContent).setTemplateParams(templateParams)
+                .setBusinessId(businessId).setReadStatus(false);
         notifyMessageMapper.insert(message);
         return message.getId();
     }
@@ -70,6 +77,21 @@ public class NotifyMessageServiceImpl implements NotifyMessageService {
     @Override
     public int updateAllNotifyMessageRead(Long userId, Integer userType) {
         return notifyMessageMapper.updateListRead(userId, userType);
+    }
+
+    @Override
+    public int deleteByBusinessId(Long businessId) {
+        return notifyMessageMapper.deleteByBusinessId(businessId);
+    }
+
+    @Override
+    public int deleteByBusinessIds(Collection<Long> businessIds) {
+        return notifyMessageMapper.deleteByBusinessIds(businessIds);
+    }
+
+    @Override
+    public int markReadByBusinessIdAndTemplate(Long businessId, String templateCode) {
+        return notifyMessageMapper.updateReadByBusinessIdAndTemplate(businessId, templateCode);
     }
 
 }

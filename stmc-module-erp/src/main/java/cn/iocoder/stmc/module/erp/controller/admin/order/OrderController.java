@@ -259,6 +259,14 @@ public class OrderController {
         return success(true);
     }
 
+    @PutMapping("/edit-items")
+    @Operation(summary = "编辑订单商品（退换货）")
+    @PreAuthorize("@ss.hasPermission('erp:order:edit-cost')")
+    public CommonResult<Boolean> editOrderItems(@Valid @RequestBody OrderSaveReqVO editReqVO) {
+        orderService.editOrderItems(editReqVO);
+        return success(true);
+    }
+
     // ========== 打印导出相关接口 ==========
 
     @GetMapping("/print-export")

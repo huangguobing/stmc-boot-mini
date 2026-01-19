@@ -87,4 +87,15 @@ public interface PaymentPlanMapper extends BaseMapperX<PaymentPlanDO> {
                 .eq(PaymentPlanDO::getOrderId, orderId));
     }
 
+    /**
+     * 根据订单ID查询付款计划列表
+     *
+     * @param orderId 订单ID
+     * @return 付款计划列表
+     */
+    default List<PaymentPlanDO> selectListByOrderId(Long orderId) {
+        return selectList(new LambdaQueryWrapperX<PaymentPlanDO>()
+                .eq(PaymentPlanDO::getOrderId, orderId));
+    }
+
 }

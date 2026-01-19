@@ -141,6 +141,13 @@ public interface OrderService {
     void editOrderCost(@Valid OrderCostFillReqVO editReqVO);
 
     /**
+     * 编辑订单商品（已完成状态，用于退换货）
+     *
+     * @param editReqVO 商品编辑请求（包含完整的商品列表和成本信息）
+     */
+    void editOrderItems(@Valid OrderSaveReqVO editReqVO);
+
+    /**
      * 审核订单（通过）
      *
      * @param id 订单ID

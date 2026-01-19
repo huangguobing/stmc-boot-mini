@@ -12,11 +12,15 @@ import cn.iocoder.stmc.module.erp.controller.admin.order.vo.OrderSaveReqVO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.customer.CustomerDO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.order.OrderDO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.order.OrderItemDO;
+import cn.iocoder.stmc.module.erp.dal.dataobject.payment.PaymentDO;
+import cn.iocoder.stmc.module.erp.dal.dataobject.paymentplan.PaymentPlanDO;
 import cn.iocoder.stmc.module.erp.dal.mysql.order.OrderItemMapper;
 import cn.iocoder.stmc.module.erp.dal.mysql.order.OrderMapper;
 import cn.iocoder.stmc.module.erp.dal.mysql.payment.PaymentMapper;
 import cn.iocoder.stmc.module.erp.dal.mysql.paymentplan.PaymentPlanMapper;
 import cn.iocoder.stmc.module.erp.enums.OrderStatusEnum;
+import cn.iocoder.stmc.module.erp.enums.PaymentPlanStatusEnum;
+import cn.iocoder.stmc.module.erp.enums.PaymentStatusEnum;
 import cn.iocoder.stmc.module.erp.service.customer.CustomerService;
 import cn.iocoder.stmc.module.erp.service.payment.PaymentService;
 import cn.iocoder.stmc.module.erp.service.paymentplan.PaymentPlanService;
@@ -241,10 +245,33 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteOrder(Long id) {
         // 校验存在
-        validateOrderExists(id);
-        // 删除订单和明细
-        orderMapper.deleteById(id);
+        OrderDO order = validateOrderExists(id);
+
+        // 校验状态：只有待审核/已取消可以删除
+        if (!OrderStatusEnum.PENDING_REVIEW.getStatus().equals(order.getStatus())
+                && !OrderStatusEnum.CANCELLED.getStatus().equals(order.getStatus())) {
+            throw exception(ORDER_DELETE_NOT_ALLOW);
+        }
+
+        // 删除关联通知（根据付款计划ID）
+        List<Long> planIds = paymentPlanMapper.selectListByOrderId(id).stream()
+                .map(PaymentPlanDO::getId)
+                .collect(Collectors.toList());
+        if (!planIds.isEmpty()) {
+            paymentPlanService.deleteNotificationsByPlanIds(planIds);
+        }
+
+        // 删除付款计划
+        paymentPlanMapper.deleteByOrderId(id);
+
+        // 删除付款单
+        paymentMapper.deleteByOrderId(id);
+
+        // 删除订单明细
         orderItemMapper.deleteByOrderId(id);
+
+        // 删除订单
+        orderMapper.deleteById(id);
     }
 
     @Override
@@ -533,16 +560,49 @@ public class OrderServiceImpl implements OrderService {
         // 不更新 paidAmount，保持原值
         orderMapper.updateById(updateOrder);
 
-        // 8. 付款单处理：物理删除 + 重新生成
+        // 8. 付款单处理（区分已付款和未付款，保留审计记录）
         Long orderId = order.getId();
 
-        // 8.1 物理删除该订单的所有付款计划
-        paymentPlanMapper.deleteByOrderId(orderId);
+        // 8.1 获取现有付款单
+        List<PaymentDO> existingPayments = paymentMapper.selectListByOrderId(orderId);
 
-        // 8.2 物理删除该订单的所有付款单
-        paymentMapper.deleteByOrderId(orderId);
+        for (PaymentDO payment : existingPayments) {
+            List<PaymentPlanDO> plans = paymentPlanMapper.selectListByPaymentId(payment.getId());
 
-        // 8.3 按新的供应商分组重新生成付款单（复用fillOrderCost的逻辑）
+            // 检查是否有已付款的计划
+            boolean hasPaidPlan = plans.stream()
+                    .anyMatch(p -> PaymentPlanStatusEnum.PAID.getStatus().equals(p.getStatus()));
+
+            if (hasPaidPlan) {
+                // 已付款 - 逻辑取消，保留审计记录
+                PaymentDO update = new PaymentDO();
+                update.setId(payment.getId());
+                update.setStatus(PaymentStatusEnum.CANCELLED.getStatus());
+                update.setRemark((payment.getRemark() != null ? payment.getRemark() + "；" : "")
+                        + "订单编辑成本时取消，原因：成本信息变更");
+                paymentMapper.updateById(update);
+
+                // 取消未付款的付款计划（不物理删除）
+                for (PaymentPlanDO plan : plans) {
+                    if (!PaymentPlanStatusEnum.PAID.getStatus().equals(plan.getStatus())) {
+                        PaymentPlanDO planUpdate = new PaymentPlanDO();
+                        planUpdate.setId(plan.getId());
+                        planUpdate.setStatus(PaymentPlanStatusEnum.CANCELLED.getStatus());
+                        paymentPlanMapper.updateById(planUpdate);
+                    }
+                }
+            } else {
+                // 未付款 - 物理删除
+                List<Long> planIds = plans.stream().map(PaymentPlanDO::getId).collect(Collectors.toList());
+                if (!planIds.isEmpty()) {
+                    paymentPlanService.deleteNotificationsByPlanIds(planIds);
+                }
+                paymentPlanMapper.deleteByPaymentId(payment.getId());
+                paymentMapper.deleteById(payment.getId());
+            }
+        }
+
+        // 8.2 按新的供应商分组重新生成付款单（复用fillOrderCost的逻辑）
         for (Map.Entry<Long, SupplierPaymentInfo> entry : newSupplierPaymentMap.entrySet()) {
             Long supplierId = entry.getKey();
             SupplierPaymentInfo paymentInfo = entry.getValue();
@@ -556,6 +616,250 @@ public class OrderServiceImpl implements OrderService {
                     paymentInfo.getIsPaid(),
                     paymentInfo.getRemark()
             );
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void editOrderItems(OrderSaveReqVO editReqVO) {
+        // 1. 校验订单存在
+        OrderDO order = validateOrderExists(editReqVO.getId());
+
+        // 2. 校验订单状态：必须是已完成状态
+        if (!OrderStatusEnum.COMPLETED.getStatus().equals(order.getStatus())) {
+            throw exception(ORDER_STATUS_NOT_ALLOW_EDIT_ITEMS);
+        }
+
+        // 3. 校验成本是否已填充
+        if (!Boolean.TRUE.equals(order.getCostFilled())) {
+            throw exception(ORDER_COST_NOT_FILLED);
+        }
+
+        // 3.1 校验商品明细不能为空
+        if (CollUtil.isEmpty(editReqVO.getItems())) {
+            throw exception(ORDER_ITEMS_CANNOT_BE_EMPTY);
+        }
+
+        // 4. 校验供应商付款一致性
+        validateSupplierPaymentConsistencyForItems(editReqVO.getItems());
+
+        // 5. 建立旧明细映射（在删除前），用于保留未传递的字段值
+        List<OrderItemDO> oldItems = orderItemMapper.selectListByOrderId(order.getId());
+        Map<Long, OrderItemDO> oldItemMap = oldItems.stream()
+                .collect(Collectors.toMap(OrderItemDO::getId, i -> i, (a, b) -> a));
+
+        // 6. 删除旧明细，插入新明细
+        orderItemMapper.deleteByOrderId(order.getId());
+
+        BigDecimal totalQuantity = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal totalPurchaseAmount = BigDecimal.ZERO;
+        BigDecimal totalGrossProfit = BigDecimal.ZERO;
+        BigDecimal totalTaxAmount = BigDecimal.ZERO;
+        BigDecimal totalNetProfit = BigDecimal.ZERO;
+
+        // 按供应商分组聚合采购金额
+        Map<Long, SupplierPaymentInfo> supplierPaymentMap = new HashMap<>();
+
+        for (OrderItemSaveReqVO itemVO : editReqVO.getItems()) {
+            OrderItemDO item = BeanUtils.toBean(itemVO, OrderItemDO.class);
+            item.setId(null); // 清空ID，插入新记录
+            item.setOrderId(order.getId());
+
+            // 计算销售金额
+            BigDecimal saleAmount = itemVO.getSaleAmount();
+            if (saleAmount == null || saleAmount.compareTo(BigDecimal.ZERO) == 0) {
+                saleAmount = (itemVO.getSaleQuantity() != null ? itemVO.getSaleQuantity() : BigDecimal.ZERO)
+                        .multiply(itemVO.getSalePrice() != null ? itemVO.getSalePrice() : BigDecimal.ZERO);
+            }
+            item.setSaleAmount(saleAmount);
+
+            // 计算采购金额（三层保护：前端传值 > 计算值 > 旧值 > 0）
+            BigDecimal purchaseAmount = itemVO.getPurchaseAmount();
+            if (purchaseAmount == null && itemVO.getPurchaseQuantity() != null && itemVO.getPurchasePrice() != null) {
+                purchaseAmount = itemVO.getPurchaseQuantity().multiply(itemVO.getPurchasePrice());
+            }
+            if (purchaseAmount == null && itemVO.getId() != null) {
+                OrderItemDO oldItem = oldItemMap.get(itemVO.getId());
+                if (oldItem != null && oldItem.getPurchaseAmount() != null) {
+                    purchaseAmount = oldItem.getPurchaseAmount();
+                }
+            }
+            if (purchaseAmount == null) {
+                purchaseAmount = BigDecimal.ZERO;
+            }
+            item.setPurchaseAmount(purchaseAmount);
+
+            // 计算税额（三层保护：前端传值 > 旧值 > 0）
+            BigDecimal taxAmount = itemVO.getTaxAmount();
+            if (taxAmount == null && itemVO.getId() != null) {
+                OrderItemDO oldItem = oldItemMap.get(itemVO.getId());
+                if (oldItem != null && oldItem.getTaxAmount() != null) {
+                    taxAmount = oldItem.getTaxAmount();
+                }
+            }
+            if (taxAmount == null) {
+                taxAmount = BigDecimal.ZERO;
+            }
+
+            // 计算毛利和净利
+            BigDecimal grossProfit = saleAmount.subtract(item.getPurchaseAmount());
+            item.setGrossProfit(grossProfit);
+            item.setTaxAmount(taxAmount);
+            item.setNetProfit(grossProfit.subtract(taxAmount));
+
+            // 插入明细
+            orderItemMapper.insert(item);
+
+            // 累计汇总
+            totalQuantity = totalQuantity.add(itemVO.getSaleQuantity() != null ? itemVO.getSaleQuantity() : BigDecimal.ZERO);
+            totalAmount = totalAmount.add(saleAmount);
+            totalPurchaseAmount = totalPurchaseAmount.add(item.getPurchaseAmount());
+            totalGrossProfit = totalGrossProfit.add(grossProfit);
+            totalTaxAmount = totalTaxAmount.add(taxAmount);
+            totalNetProfit = totalNetProfit.add(item.getNetProfit());
+
+            // 按供应商聚合采购金额
+            if (itemVO.getSupplierId() != null && item.getPurchaseAmount().compareTo(BigDecimal.ZERO) > 0) {
+                SupplierPaymentInfo paymentInfo = supplierPaymentMap.computeIfAbsent(
+                        itemVO.getSupplierId(),
+                        k -> new SupplierPaymentInfo(itemVO.getPaymentDate(), itemVO.getIsPaid())
+                );
+                paymentInfo.addAmount(item.getPurchaseAmount());
+                paymentInfo.addRemark(itemVO.getPurchaseRemark());
+            }
+        }
+
+        // 6. 更新订单汇总（销售汇总 + 成本汇总）
+        // 三层null安全处理，防止NPE
+        BigDecimal shippingFee = editReqVO.getShippingFee();
+        if (shippingFee == null) {
+            shippingFee = order.getShippingFee();
+        }
+        if (shippingFee == null) {
+            shippingFee = BigDecimal.ZERO;
+        }
+
+        BigDecimal discountAmount = editReqVO.getDiscountAmount();
+        if (discountAmount == null) {
+            discountAmount = order.getDiscountAmount();
+        }
+        if (discountAmount == null) {
+            discountAmount = BigDecimal.ZERO;
+        }
+
+        OrderDO updateOrder = new OrderDO();
+        updateOrder.setId(order.getId());
+        updateOrder.setTotalQuantity(totalQuantity);
+        updateOrder.setTotalAmount(totalAmount);
+        updateOrder.setShippingFee(shippingFee);
+        updateOrder.setDiscountAmount(discountAmount);
+        updateOrder.setPayableAmount(totalAmount.add(shippingFee).subtract(discountAmount));
+        updateOrder.setTotalPurchaseAmount(totalPurchaseAmount);
+        updateOrder.setTotalGrossProfit(totalGrossProfit);
+        updateOrder.setTotalTaxAmount(totalTaxAmount);
+        updateOrder.setTotalNetProfit(totalNetProfit);
+        // 不更新costFilled、costFilledBy、costFilledTime（保留首次填充信息）
+
+        orderMapper.updateById(updateOrder);
+
+        // 7. 付款单处理（区分已付款和未付款，保留审计记录）
+        Long orderId = order.getId();
+
+        // 7.1 获取现有付款单
+        List<PaymentDO> existingPayments = paymentMapper.selectListByOrderId(orderId);
+
+        for (PaymentDO payment : existingPayments) {
+            List<PaymentPlanDO> plans = paymentPlanMapper.selectListByPaymentId(payment.getId());
+
+            // 检查是否有已付款的计划
+            boolean hasPaidPlan = plans.stream()
+                    .anyMatch(p -> PaymentPlanStatusEnum.PAID.getStatus().equals(p.getStatus()));
+
+            if (hasPaidPlan) {
+                // 已付款 - 逻辑取消，保留审计记录
+                PaymentDO update = new PaymentDO();
+                update.setId(payment.getId());
+                update.setStatus(PaymentStatusEnum.CANCELLED.getStatus());
+                update.setRemark((payment.getRemark() != null ? payment.getRemark() + "；" : "")
+                        + "订单编辑时取消，原因：商品信息变更");
+                paymentMapper.updateById(update);
+
+                // 取消未付款的付款计划（不物理删除）
+                for (PaymentPlanDO plan : plans) {
+                    if (!PaymentPlanStatusEnum.PAID.getStatus().equals(plan.getStatus())) {
+                        PaymentPlanDO planUpdate = new PaymentPlanDO();
+                        planUpdate.setId(plan.getId());
+                        planUpdate.setStatus(PaymentPlanStatusEnum.CANCELLED.getStatus());
+                        paymentPlanMapper.updateById(planUpdate);
+                    }
+                }
+            } else {
+                // 未付款 - 物理删除
+                List<Long> planIds = plans.stream().map(PaymentPlanDO::getId).collect(Collectors.toList());
+                if (!planIds.isEmpty()) {
+                    paymentPlanService.deleteNotificationsByPlanIds(planIds);
+                }
+                paymentPlanMapper.deleteByPaymentId(payment.getId());
+                paymentMapper.deleteById(payment.getId());
+            }
+        }
+
+        // 7.2 按新的供应商分组重新生成付款单
+        for (Map.Entry<Long, SupplierPaymentInfo> entry : supplierPaymentMap.entrySet()) {
+            Long supplierId = entry.getKey();
+            SupplierPaymentInfo paymentInfo = entry.getValue();
+
+            paymentService.createPaymentFromCostFill(
+                    supplierId,
+                    order.getId(),
+                    paymentInfo.getTotalAmount(),
+                    paymentInfo.getPaymentDate(),
+                    paymentInfo.getIsPaid(),
+                    paymentInfo.getRemark()
+            );
+        }
+    }
+
+    /**
+     * 校验同供应商的付款日期和付款状态一致性（OrderItemSaveReqVO版本）
+     * 同一供应商的所有商品必须有相同的付款日期和付款状态
+     */
+    private void validateSupplierPaymentConsistencyForItems(List<OrderItemSaveReqVO> items) {
+        // 按供应商分组
+        Map<Long, List<OrderItemSaveReqVO>> supplierItemsMap = items.stream()
+                .filter(item -> item.getSupplierId() != null)
+                .collect(Collectors.groupingBy(OrderItemSaveReqVO::getSupplierId));
+
+        // 检查每个供应商组内的一致性
+        for (Map.Entry<Long, List<OrderItemSaveReqVO>> entry : supplierItemsMap.entrySet()) {
+            List<OrderItemSaveReqVO> supplierItems = entry.getValue();
+            if (supplierItems.size() <= 1) {
+                continue; // 只有一个商品，无需校验
+            }
+
+            // 取第一个商品的付款日期和状态作为基准
+            LocalDate basePaymentDate = supplierItems.get(0).getPaymentDate();
+            Boolean baseIsPaid = supplierItems.get(0).getIsPaid();
+
+            // 检查其他商品是否一致
+            for (int i = 1; i < supplierItems.size(); i++) {
+                OrderItemSaveReqVO item = supplierItems.get(i);
+                LocalDate itemPaymentDate = item.getPaymentDate();
+                Boolean itemIsPaid = item.getIsPaid();
+
+                // 比较付款日期
+                boolean dateMatch = (basePaymentDate == null && itemPaymentDate == null)
+                        || (basePaymentDate != null && basePaymentDate.equals(itemPaymentDate));
+
+                // 比较付款状态
+                boolean paidMatch = (baseIsPaid == null && itemIsPaid == null)
+                        || (baseIsPaid != null && baseIsPaid.equals(itemIsPaid));
+
+                if (!dateMatch || !paidMatch) {
+                    throw exception(ORDER_SUPPLIER_PAYMENT_INCONSISTENT);
+                }
+            }
         }
     }
 

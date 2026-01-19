@@ -30,4 +30,9 @@ public class NotifySendSingleToUserReqDTO {
      * 站内信模板参数
      */
     private Map<String, Object> templateParams;
+
+    /**
+     * 业务对象ID（如：付款计划ID）
+     */
+    private Long businessId;
 }

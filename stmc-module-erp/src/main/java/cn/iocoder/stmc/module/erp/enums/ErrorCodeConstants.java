@@ -32,6 +32,9 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_SUPPLIER_PAYMENT_INCONSISTENT = new ErrorCode(1_020_003_009, "同一供应商的商品付款日期和付款状态必须一致");
     ErrorCode ORDER_STATUS_NOT_ALLOW_EDIT_COST = new ErrorCode(1_020_003_010, "当前订单状态不允许编辑成本");
     ErrorCode ORDER_COST_NOT_FILLED = new ErrorCode(1_020_003_011, "订单成本尚未填充，无法编辑");
+    ErrorCode ORDER_STATUS_NOT_ALLOW_EDIT_ITEMS = new ErrorCode(1_020_003_012, "当前订单状态不允许编辑商品");
+    ErrorCode ORDER_ITEMS_CANNOT_BE_EMPTY = new ErrorCode(1_020_003_013, "订单商品明细不能为空");
+    ErrorCode ORDER_DELETE_NOT_ALLOW = new ErrorCode(1_020_003_014, "当前订单状态不允许删除，只有待审核或已取消的订单可删除");
 
     // ========== 付款管理 1-020-004-000 ==========
     ErrorCode PAYMENT_NOT_EXISTS = new ErrorCode(1_020_004_000, "付款记录不存在");

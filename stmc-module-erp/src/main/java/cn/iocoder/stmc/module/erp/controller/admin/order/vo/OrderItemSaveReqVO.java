@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Schema(description = "管理后台 - ERP 订单明细新增/修改 Request VO")
 @Data
@@ -36,5 +37,34 @@ public class OrderItemSaveReqVO {
 
     @Schema(description = "销售备注（如45度、90度）", example = "45度")
     private String saleRemark;
+
+    // ========== 管理员填写字段（采购成本信息）==========
+
+    @Schema(description = "进货单位")
+    private String purchaseUnit;
+
+    @Schema(description = "进货数量")
+    private BigDecimal purchaseQuantity;
+
+    @Schema(description = "采购单价")
+    private BigDecimal purchasePrice;
+
+    @Schema(description = "采购金额")
+    private BigDecimal purchaseAmount;
+
+    @Schema(description = "采购备注")
+    private String purchaseRemark;
+
+    @Schema(description = "供应商ID")
+    private Long supplierId;
+
+    @Schema(description = "税额")
+    private BigDecimal taxAmount;
+
+    @Schema(description = "付款日期")
+    private LocalDate paymentDate;
+
+    @Schema(description = "是否已付款")
+    private Boolean isPaid;
 
 }

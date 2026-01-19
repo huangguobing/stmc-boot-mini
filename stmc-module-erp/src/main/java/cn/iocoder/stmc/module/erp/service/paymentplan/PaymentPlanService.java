@@ -7,6 +7,7 @@ import cn.iocoder.stmc.module.erp.dal.dataobject.paymentplan.PaymentPlanDO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -123,4 +124,11 @@ public interface PaymentPlanService {
      */
     void updatePaymentPlanFromCostEdit(Long paymentId, BigDecimal newAmount,
                                         LocalDate newPlanDate, Boolean newIsPaid);
+
+    /**
+     * 根据付款计划ID列表删除相关通知
+     *
+     * @param planIds 付款计划ID列表
+     */
+    void deleteNotificationsByPlanIds(Collection<Long> planIds);
 }

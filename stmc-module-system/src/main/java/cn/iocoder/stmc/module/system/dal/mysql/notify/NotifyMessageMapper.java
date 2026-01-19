@@ -1,5 +1,6 @@
 package cn.iocoder.stmc.module.system.dal.mysql.notify;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.stmc.framework.common.pojo.PageResult;
 import cn.iocoder.stmc.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.stmc.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -65,6 +66,46 @@ public interface NotifyMessageMapper extends BaseMapperX<NotifyMessageDO> {
                 .eq(NotifyMessageDO::getReadStatus, false)
                 .eq(NotifyMessageDO::getUserId, userId)
                 .eq(NotifyMessageDO::getUserType, userType));
+    }
+
+    /**
+     * 查询指定业务对象和模板的未读消息
+     */
+    default List<NotifyMessageDO> selectUnreadByBusinessIdAndTemplate(Long businessId, String templateCode) {
+        return selectList(new LambdaQueryWrapperX<NotifyMessageDO>()
+                .eq(NotifyMessageDO::getBusinessId, businessId)
+                .eq(NotifyMessageDO::getTemplateCode, templateCode)
+                .eq(NotifyMessageDO::getReadStatus, false));
+    }
+
+    /**
+     * 根据业务ID删除通知（物理删除）
+     */
+    default int deleteByBusinessId(Long businessId) {
+        return delete(new LambdaQueryWrapperX<NotifyMessageDO>()
+                .eq(NotifyMessageDO::getBusinessId, businessId));
+    }
+
+    /**
+     * 根据业务ID列表批量删除通知
+     */
+    default int deleteByBusinessIds(Collection<Long> businessIds) {
+        if (CollUtil.isEmpty(businessIds)) {
+            return 0;
+        }
+        return delete(new LambdaQueryWrapperX<NotifyMessageDO>()
+                .in(NotifyMessageDO::getBusinessId, businessIds));
+    }
+
+    /**
+     * 根据业务ID和模板编码标记消息为已读
+     */
+    default int updateReadByBusinessIdAndTemplate(Long businessId, String templateCode) {
+        return update(new NotifyMessageDO().setReadStatus(true).setReadTime(LocalDateTime.now()),
+                new LambdaQueryWrapperX<NotifyMessageDO>()
+                        .eq(NotifyMessageDO::getBusinessId, businessId)
+                        .eq(NotifyMessageDO::getTemplateCode, templateCode)
+                        .eq(NotifyMessageDO::getReadStatus, false));
     }
 
 }

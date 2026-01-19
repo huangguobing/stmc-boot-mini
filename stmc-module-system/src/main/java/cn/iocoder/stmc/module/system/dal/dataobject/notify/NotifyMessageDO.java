@@ -86,6 +86,10 @@ public class NotifyMessageDO extends BaseDO {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private Map<String, Object> templateParams;
+    /**
+     * 业务对象ID（如：付款计划ID）
+     */
+    private Long businessId;
 
     // ========= 读取相关字段 =========
 

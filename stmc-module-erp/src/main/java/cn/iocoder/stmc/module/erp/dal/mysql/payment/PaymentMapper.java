@@ -7,6 +7,8 @@ import cn.iocoder.stmc.module.erp.controller.admin.payment.vo.PaymentPageReqVO;
 import cn.iocoder.stmc.module.erp.dal.dataobject.payment.PaymentDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * ERP 付款 Mapper
  *
@@ -53,6 +55,17 @@ public interface PaymentMapper extends BaseMapperX<PaymentDO> {
      */
     default int deleteByOrderId(Long orderId) {
         return delete(new LambdaQueryWrapperX<PaymentDO>()
+                .eq(PaymentDO::getOrderId, orderId));
+    }
+
+    /**
+     * 根据订单ID查询付款单列表
+     *
+     * @param orderId 订单ID
+     * @return 付款单列表
+     */
+    default List<PaymentDO> selectListByOrderId(Long orderId) {
+        return selectList(new LambdaQueryWrapperX<PaymentDO>()
                 .eq(PaymentDO::getOrderId, orderId));
     }
 

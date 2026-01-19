@@ -18,6 +18,7 @@ import cn.iocoder.stmc.module.erp.service.supplier.SupplierService;
 import cn.iocoder.stmc.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.stmc.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import cn.iocoder.stmc.module.system.dal.dataobject.user.AdminUserDO;
+import cn.iocoder.stmc.module.system.service.notify.NotifyMessageService;
 import cn.iocoder.stmc.module.system.service.permission.PermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -67,6 +68,8 @@ public class PaymentPlanServiceImpl implements PaymentPlanService {
     private SupplierService supplierService;
     @Resource
     private NotifyMessageSendApi notifyMessageSendApi;
+    @Resource
+    private NotifyMessageService notifyMessageService;
     @Resource
     private PermissionService permissionService;
     @Resource
@@ -268,14 +271,15 @@ public class PaymentPlanServiceImpl implements PaymentPlanService {
         int dueTodayCount = 0;
         int overdueCount = 0;
 
-        // 2. 处理即将到期的付款计划（提前3天）
-        List<PaymentPlanDO> upcomingPlans = paymentPlanMapper.selectUpcomingPlans(upcomingDate);
-        for (PaymentPlanDO plan : upcomingPlans) {
-            sendUpcomingNotification(plan, notifyUserIds);
-            plan.setNotifyStatus(PaymentPlanNotifyStatusEnum.NOTIFIED_UPCOMING.getStatus());
-            paymentPlanMapper.updateById(plan);
-            upcomingCount++;
-        }
+        // 2. 【已屏蔽】处理即将到期的付款计划（提前3天）
+        // 根据需求优化，不再发送"即将到期"通知，只保留"当日到期"和"逾期"通知
+        // List<PaymentPlanDO> upcomingPlans = paymentPlanMapper.selectUpcomingPlans(upcomingDate);
+        // for (PaymentPlanDO plan : upcomingPlans) {
+        //     sendUpcomingNotification(plan, notifyUserIds);
+        //     plan.setNotifyStatus(PaymentPlanNotifyStatusEnum.NOTIFIED_UPCOMING.getStatus());
+        //     paymentPlanMapper.updateById(plan);
+        //     upcomingCount++;
+        // }
 
         // 3. 处理今日到期的付款计划
         List<PaymentPlanDO> dueTodayPlans = paymentPlanMapper.selectDueTodayPlans(today);
@@ -356,6 +360,10 @@ public class PaymentPlanServiceImpl implements PaymentPlanService {
      * 发送逾期通知
      */
     private void sendOverdueNotification(PaymentPlanDO plan, Set<Long> userIds) {
+        // 发送逾期通知前，标记该付款计划之前的"当日到期"通知为已读
+        // 防止同一付款计划重复提醒（一个付款计划只需要一次提醒）
+        markPreviousDueTodayNotificationsAsRead(plan.getId());
+
         SupplierDO supplier = supplierService.getSupplier(plan.getSupplierId());
         String supplierName = supplier != null ? supplier.getName() : "未知供应商";
 
@@ -382,6 +390,7 @@ public class PaymentPlanServiceImpl implements PaymentPlanService {
                 reqDTO.setUserId(userId);
                 reqDTO.setTemplateCode(templateCode);
                 reqDTO.setTemplateParams(params);
+                reqDTO.setBusinessId(planId); // 关联付款计划ID，用于后续防重和删除
                 notifyMessageSendApi.sendSingleMessageToAdmin(reqDTO);
             } catch (Exception e) {
                 log.error("[sendNotification] 发送通知失败，userId:{}, templateCode:{}, planId:{}",
@@ -556,6 +565,26 @@ public class PaymentPlanServiceImpl implements PaymentPlanService {
         }
 
         paymentPlanMapper.updateById(update);
+    }
+
+    /**
+     * 标记指定付款计划的"当日到期"通知为已读
+     * 用于逾期通知发送前，避免同一付款计划重复提醒
+     */
+    private void markPreviousDueTodayNotificationsAsRead(Long planId) {
+        int updated = notifyMessageService.markReadByBusinessIdAndTemplate(planId, NOTIFY_TEMPLATE_DUE_TODAY);
+        if (updated > 0) {
+            log.info("[markPreviousDueTodayNotificationsAsRead] 标记{}条当日到期通知为已读，planId:{}", updated, planId);
+        }
+    }
+
+    @Override
+    public void deleteNotificationsByPlanIds(Collection<Long> planIds) {
+        if (CollUtil.isEmpty(planIds)) {
+            return;
+        }
+        int deleted = notifyMessageService.deleteByBusinessIds(planIds);
+        log.info("[deleteNotificationsByPlanIds] 删除{}条通知，planIds:{}", deleted, planIds);
     }
 
 }

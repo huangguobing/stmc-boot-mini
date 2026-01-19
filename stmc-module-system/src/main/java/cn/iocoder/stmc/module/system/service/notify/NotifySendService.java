@@ -22,6 +22,19 @@ public interface NotifySendService {
      */
     Long sendSingleNotifyToAdmin(Long userId,
                                  String templateCode, Map<String, Object> templateParams);
+
+    /**
+     * 发送单条站内信给管理后台的用户（支持关联业务ID）
+     *
+     * @param userId 用户编号
+     * @param templateCode 短信模板编号
+     * @param templateParams 短信模板参数
+     * @param businessId 业务对象ID（如：付款计划ID）
+     * @return 发送日志编号
+     */
+    Long sendSingleNotifyToAdmin(Long userId,
+                                 String templateCode, Map<String, Object> templateParams, Long businessId);
+
     /**
      * 发送单条站内信给用户 APP 的用户
      *
@@ -46,6 +59,19 @@ public interface NotifySendService {
      */
     Long sendSingleNotify( Long userId, Integer userType,
                            String templateCode, Map<String, Object> templateParams);
+
+    /**
+     * 发送单条站内信给用户（支持关联业务ID）
+     *
+     * @param userId 用户编号
+     * @param userType 用户类型
+     * @param templateCode 站内信模板编号
+     * @param templateParams 站内信模板参数
+     * @param businessId 业务对象ID（如：付款计划ID）
+     * @return 发送日志编号
+     */
+    Long sendSingleNotify(Long userId, Integer userType,
+                          String templateCode, Map<String, Object> templateParams, Long businessId);
 
     default void sendBatchNotify(List<String> mobiles, List<Long> userIds, Integer userType,
                                  String templateCode, Map<String, Object> templateParams) {

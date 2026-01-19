@@ -20,7 +20,7 @@ public class NotifyMessageSendApiImpl implements NotifyMessageSendApi {
     @Override
     public Long sendSingleMessageToAdmin(NotifySendSingleToUserReqDTO reqDTO) {
         return notifySendService.sendSingleNotifyToAdmin(reqDTO.getUserId(),
-                reqDTO.getTemplateCode(), reqDTO.getTemplateParams());
+                reqDTO.getTemplateCode(), reqDTO.getTemplateParams(), reqDTO.getBusinessId());
     }
 
     @Override
