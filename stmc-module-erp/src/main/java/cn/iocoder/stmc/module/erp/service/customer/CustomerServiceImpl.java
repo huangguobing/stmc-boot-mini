@@ -104,6 +104,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<CustomerDO> getCustomerListByStatusAndCreator(Integer status, String creator) {
+        return customerMapper.selectListByStatusAndCreator(status, creator);
+    }
+
+    @Override
     public Map<Long, CustomerDO> getCustomerMap(Collection<Long> ids) {
         if (CollUtil.isEmpty(ids)) {
             return Collections.emptyMap();

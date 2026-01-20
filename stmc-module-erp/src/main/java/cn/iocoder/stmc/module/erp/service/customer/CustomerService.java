@@ -71,6 +71,15 @@ public interface CustomerService {
     List<CustomerDO> getCustomerListByStatus(Integer status);
 
     /**
+     * 获得客户列表（按状态和创建人）
+     *
+     * @param status 状态
+     * @param creator 创建人ID
+     * @return 客户列表
+     */
+    List<CustomerDO> getCustomerListByStatusAndCreator(Integer status, String creator);
+
+    /**
      * 获得客户 Map
      *
      * @param ids 编号列表

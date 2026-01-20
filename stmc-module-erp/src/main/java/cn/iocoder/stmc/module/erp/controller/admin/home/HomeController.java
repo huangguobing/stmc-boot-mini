@@ -63,8 +63,12 @@ public class HomeController {
         respVO.setIsAdmin(isAdmin);
 
         // ========== 基础统计 ==========
-        // 客户数对所有人可见
-        respVO.setCustomerCount(customerMapper.selectCount());
+        // 客户数：管理员看全部，业务员只看自己创建的
+        if (isAdmin) {
+            respVO.setCustomerCount(customerMapper.selectCount());
+        } else {
+            respVO.setCustomerCount(customerMapper.selectCountByCreator(String.valueOf(userId)));
+        }
 
         // 供应商数和待付款数只有管理员可见
         if (isAdmin) {
