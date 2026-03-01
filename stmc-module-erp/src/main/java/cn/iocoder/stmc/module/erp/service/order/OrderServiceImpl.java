@@ -435,7 +435,11 @@ public class OrderServiceImpl implements OrderService {
         updateOrder.setTotalPurchaseAmount(totalPurchaseAmount);
         updateOrder.setTotalGrossProfit(totalGrossProfit);
         updateOrder.setTotalTaxAmount(totalTaxAmount);
-        updateOrder.setTotalNetProfit(totalNetProfit);
+        // 其他费用扣减净利
+        BigDecimal extraCost = fillReqVO.getExtraCost() != null ? fillReqVO.getExtraCost() : BigDecimal.ZERO;
+        updateOrder.setTotalNetProfit(totalNetProfit.subtract(extraCost));
+        updateOrder.setExtraCost(fillReqVO.getExtraCost());
+        updateOrder.setExtraCostRemark(fillReqVO.getExtraCostRemark());
         // 不更新 paidAmount，保持原值
         updateOrder.setCostFilled(true);
         updateOrder.setCostFilledBy(SecurityFrameworkUtils.getLoginUserId());
@@ -556,7 +560,11 @@ public class OrderServiceImpl implements OrderService {
         updateOrder.setTotalPurchaseAmount(totalPurchaseAmount);
         updateOrder.setTotalGrossProfit(totalGrossProfit);
         updateOrder.setTotalTaxAmount(totalTaxAmount);
-        updateOrder.setTotalNetProfit(totalNetProfit);
+        // 其他费用扣减净利
+        BigDecimal extraCost = editReqVO.getExtraCost() != null ? editReqVO.getExtraCost() : BigDecimal.ZERO;
+        updateOrder.setTotalNetProfit(totalNetProfit.subtract(extraCost));
+        updateOrder.setExtraCost(editReqVO.getExtraCost());
+        updateOrder.setExtraCostRemark(editReqVO.getExtraCostRemark());
         // 不更新 paidAmount，保持原值
         orderMapper.updateById(updateOrder);
 
@@ -758,7 +766,9 @@ public class OrderServiceImpl implements OrderService {
         updateOrder.setTotalPurchaseAmount(totalPurchaseAmount);
         updateOrder.setTotalGrossProfit(totalGrossProfit);
         updateOrder.setTotalTaxAmount(totalTaxAmount);
-        updateOrder.setTotalNetProfit(totalNetProfit);
+        // 其他费用扣减净利（保留原订单的 extraCost）
+        BigDecimal extraCost = order.getExtraCost() != null ? order.getExtraCost() : BigDecimal.ZERO;
+        updateOrder.setTotalNetProfit(totalNetProfit.subtract(extraCost));
         // 不更新costFilled、costFilledBy、costFilledTime（保留首次填充信息）
 
         orderMapper.updateById(updateOrder);
