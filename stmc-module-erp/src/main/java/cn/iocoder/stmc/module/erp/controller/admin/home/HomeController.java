@@ -73,7 +73,8 @@ public class HomeController {
         // 供应商数和待付款数只有管理员可见
         if (isAdmin) {
             respVO.setSupplierCount(supplierMapper.selectCount());
-            respVO.setPendingPaymentPlanCount(paymentPlanMapper.selectCountByStatus(PaymentPlanStatusEnum.PENDING.getStatus()));
+            respVO.setPendingPaymentPlanCount(paymentPlanMapper.selectCountByStatuses(
+                    PaymentPlanStatusEnum.PENDING.getStatus(), PaymentPlanStatusEnum.OVERDUE.getStatus()));
         } else {
             respVO.setSupplierCount(null);
             respVO.setPendingPaymentPlanCount(null);

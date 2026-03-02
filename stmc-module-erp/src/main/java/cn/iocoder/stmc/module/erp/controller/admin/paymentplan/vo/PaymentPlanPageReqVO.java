@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static cn.iocoder.stmc.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY;
 
@@ -23,6 +24,9 @@ public class PaymentPlanPageReqVO extends PageParam {
 
     @Schema(description = "状态(0待付款 10已付款 20已逾期 30已取消)", example = "0")
     private Integer status;
+
+    @Schema(description = "状态列表（多状态筛选）", example = "[0, 20]")
+    private List<Integer> statusList;
 
     @Schema(description = "计划日期开始", example = "2024-01-01")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY)

@@ -24,6 +24,7 @@ public interface PaymentPlanMapper extends BaseMapperX<PaymentPlanDO> {
                 .likeIfPresent(PaymentPlanDO::getPaymentNo, reqVO.getPaymentNo())
                 .eqIfPresent(PaymentPlanDO::getSupplierId, reqVO.getSupplierId())
                 .eqIfPresent(PaymentPlanDO::getStatus, reqVO.getStatus())
+                .inIfPresent(PaymentPlanDO::getStatus, reqVO.getStatusList())
                 .betweenIfPresent(PaymentPlanDO::getPlanDate, reqVO.getPlanDateStart(), reqVO.getPlanDateEnd())
                 .last("ORDER BY FIELD(status, 20, 0, 10, 30), create_time DESC"));
     }
@@ -74,6 +75,14 @@ public interface PaymentPlanMapper extends BaseMapperX<PaymentPlanDO> {
     default Long selectCountByStatus(Integer status) {
         return selectCount(new LambdaQueryWrapperX<PaymentPlanDO>()
                 .eq(PaymentPlanDO::getStatus, status));
+    }
+
+    /**
+     * 根据多个状态统计付款计划数量（待付款 + 已逾期）
+     */
+    default Long selectCountByStatuses(Integer... statuses) {
+        return selectCount(new LambdaQueryWrapperX<PaymentPlanDO>()
+                .in(PaymentPlanDO::getStatus, (Object[]) statuses));
     }
 
     /**
